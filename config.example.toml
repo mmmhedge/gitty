@@ -1,0 +1,56 @@
+# gitty — profile config
+# Edit this file, then run:  python3 scripts/build_profile.py config.example.toml
+# Output is written to profile/README.md, which you drop into the special
+# repo named exactly after your handle (github.com/<you>/<you>).
+
+[identity]
+name        = "Maria Pavlenko"   # guessed from your email — change if wrong
+username    = "your-gh-handle"    # your GitHub username (the central account)
+tagline     = "Software engineer • building across the stack"
+location    = "Earth"
+pronouns    = ""                  # e.g. "she/her" — leave blank to hide
+avatar_emoji = "👋"
+
+[about]
+# A few sentences. Markdown is allowed.
+bio = """
+I'm an engineer whose work is spread across a lot of repos and accounts —
+this is the central home that ties it all together.
+"""
+currently    = "Building developer tools and shipping side projects"
+learning     = "Rust, distributed systems"
+ask_me_about = "Python, TypeScript, infra, design systems"
+
+[contact]
+website  = ""                     # https://...
+email    = ""                     # shown only if you set it
+linkedin = ""                     # https://linkedin.com/in/...
+twitter  = ""                     # handle without @
+mastodon = ""                     # https://mastodon.social/@you
+
+[skills]
+languages  = ["Python", "TypeScript", "Go", "Rust", "SQL"]
+frameworks = ["React", "Next.js", "FastAPI", "Node.js"]
+tools      = ["Docker", "Kubernetes", "PostgreSQL", "AWS", "Git"]
+
+# Add one [[projects]] block per flagship project. These render as cards.
+[[projects]]
+name        = "project-one"
+description = "Short, punchy description of what it does and why it's worth a look."
+url         = "https://github.com/your-gh-handle/project-one"
+tags        = ["python", "cli"]
+
+[[projects]]
+name        = "project-two"
+description = "Another project worth pinning on your profile."
+url         = "https://github.com/your-gh-handle/project-two"
+tags        = ["typescript", "react"]
+
+[stats]
+# These cards render your REAL GitHub activity via third-party renderers.
+show_stats_card = true
+show_streak     = true
+show_top_langs  = true
+show_trophies   = true
+theme           = "tokyonight"    # any github-readme-stats theme name
+include_private = true            # count private-repo contributions in the cards

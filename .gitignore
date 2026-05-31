@@ -1,0 +1,6 @@
+# Your personal, filled-in config (keep the example tracked)
+config.toml
+# Generated profile (regenerate from config; example output is tracked)
+profile/README.md
+__pycache__/
+*.pyc
