@@ -1,0 +1,449 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="PAVLENKO.M.A — Order Book">
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: #050810;
+    color: #e2e8f0;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── switcher ─────────────────────────────────── */
+  .sw {
+    background: #0d1117;
+    border-bottom: 1px solid #1e293b;
+    padding: 4px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .sw span { color: #1e293b; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .sw a { font-size: 9px; color: #334155; text-decoration: none; padding: 2px 7px; border: 1px solid transparent; transition: all 0.15s; }
+  .sw a:hover { color: #cbd5e1; border-color: #1e293b; }
+  .sw a.on { color: #22d3ee; border-color: rgba(34,211,238,0.3); }
+
+  /* ── ticker ───────────────────────────────────── */
+  .ticker {
+    background: #080d16;
+    border-bottom: 1px solid #1e293b;
+    padding: 0 16px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .t-instr { font-size: 15px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.08em; padding-right: 20px; border-right: 1px solid #1e293b; margin-right: 20px; white-space: nowrap; }
+  .t-stat { display: flex; flex-direction: column; justify-content: center; padding: 0 18px; border-right: 1px solid #1e293b; height: 100%; }
+  .t-stat:last-child { border: none; }
+  .t-lbl { font-size: 8px; color: #334155; letter-spacing: 0.14em; text-transform: uppercase; }
+  .t-val { font-size: 12px; color: #e2e8f0; margin-top: 1px; }
+  .t-val.g { color: #22c55e; }
+  .t-val.r { color: #ef4444; }
+  .t-val.a { color: #22d3ee; }
+
+  /* ── book ─────────────────────────────────────── */
+  .main { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  .book { display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow: hidden; }
+  .side { display: flex; flex-direction: column; overflow: hidden; }
+  .side.bid { border-right: 1px solid #1e293b; }
+
+  .col-head {
+    padding: 6px 16px;
+    border-bottom: 1px solid #1e293b;
+    background: #080d16;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .col-title { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .col-title.g { color: #22c55e; }
+  .col-title.r { color: #ef4444; }
+  .col-sub { font-size: 8px; color: #1e293b; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .rows { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .rows::-webkit-scrollbar { display: none; }
+
+  /* bid row */
+  .row {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(30,41,59,0.35);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    cursor: default;
+    transition: background 0.25s ease;
+  }
+  .bid .row {
+    background: linear-gradient(to left, rgba(34,197,94,0.08) var(--d,70%), transparent var(--d,70%));
+  }
+  .ask .row {
+    background: linear-gradient(to right, rgba(239,68,68,0.08) var(--d,70%), transparent var(--d,70%));
+  }
+  .row.flash-g { background: rgba(34,197,94,0.18) !important; }
+  .row.flash-r { background: rgba(239,68,68,0.18) !important; }
+
+  .row-left { flex: 1; min-width: 0; }
+  .row-name { font-size: 12px; color: #e2e8f0; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-det { font-size: 9px; color: #334155; letter-spacing: 0.04em; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .row-right { flex-shrink: 0; text-align: right; padding-left: 12px; }
+  .metric { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+  .metric.g { color: #22c55e; }
+  .metric.r { color: #ef4444; }
+  .metric.a { color: #22d3ee; }
+  .metric.m { color: #94a3b8; }
+  .cond { font-size: 8px; color: #1e293b; letter-spacing: 0.12em; margin-top: 3px; }
+
+  /* ── blotter ──────────────────────────────────── */
+  .blotter { border-top: 2px solid #1e293b; height: 180px; display: flex; flex-direction: column; flex-shrink: 0; }
+  .bl-head {
+    padding: 5px 16px;
+    background: #080d16;
+    border-bottom: 1px solid #1e293b;
+    font-size: 8px;
+    color: #334155;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .pulse { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: blink 1.4s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+  .bl-rows { overflow-y: auto; scrollbar-width: none; flex: 1; }
+  .bl-rows::-webkit-scrollbar { display: none; }
+
+  .bl-row {
+    display: grid;
+    grid-template-columns: 72px 46px 1fr 100px 72px;
+    gap: 10px;
+    padding: 5px 16px;
+    border-bottom: 1px solid rgba(30,41,59,0.25);
+    align-items: center;
+    font-size: 10px;
+  }
+  .bl-row:hover { background: rgba(255,255,255,0.015); }
+  .bl-t { color: #1e293b; }
+  .bl-b { color: #22c55e; font-weight: 700; }
+  .bl-name { color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bl-p { color: #475569; text-align: right; white-space: nowrap; }
+  .tag { font-size: 8px; letter-spacing: 0.07em; padding: 1px 5px; border: 1px solid; text-align: right; display: inline-block; white-space: nowrap; }
+  .tag.filled  { color: #22c55e; border-color: rgba(34,197,94,0.3); }
+  .tag.winner  { color: #f59e0b; border-color: rgba(245,158,11,0.3); }
+  .tag.fin     { color: #8b5cf6; border-color: rgba(139,92,246,0.3); }
+  .tag.top     { color: #22d3ee; border-color: rgba(34,211,238,0.3); }
+  .tag.open    { color: #475569; border-color: #1e293b; }
+
+  /* ── footer ───────────────────────────────────── */
+  .foot {
+    background: #080d16;
+    border-top: 1px solid #1e293b;
+    padding: 5px 16px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .foot a { font-size: 9px; color: #334155; text-decoration: none; letter-spacing: 0.08em; transition: color 0.15s; }
+  .foot a:hover { color: #22d3ee; }
+  .foot .sep { color: #1e293b; }
+</style>
+
+<div class="sw">
+  <span>Concept</span>
+  <a href="/">← Original</a>
+  <a href="/order-book" class="on">Order Book</a>
+  <a href="/fix">FIX Protocol</a>
+</div>
+
+<div class="ticker">
+  <div class="t-instr">PAVLENKO.M.A</div>
+  <div class="t-stat"><div class="t-lbl">Status</div><div class="t-val g">● OPEN</div></div>
+  <div class="t-stat"><div class="t-lbl">Desk</div><div class="t-val">LON / GBR</div></div>
+  <div class="t-stat"><div class="t-lbl">Best Bid</div><div class="t-val g" id="bb">ML+Quant</div></div>
+  <div class="t-stat"><div class="t-lbl">Best Ask</div><div class="t-val r">Hard Problems</div></div>
+  <div class="t-stat"><div class="t-lbl">Wins</div><div class="t-val a">3 prizes · 10+ fills</div></div>
+  <div class="t-stat"><div class="t-lbl">Time (GMT)</div><div class="t-val" id="clk">--:--:--</div></div>
+</div>
+
+<div class="main">
+  <div class="book">
+
+    <!-- BID ──────────────────────────────────────── -->
+    <div class="side bid">
+      <div class="col-head">
+        <span class="col-title g">BID — What I Bring</span>
+        <span class="col-sub">Skill / Credential</span>
+      </div>
+      <div class="rows">
+
+        <div class="row" style="--d:94%" id="b0">
+          <div class="row-left">
+            <div class="row-name">ML / Quant Research</div>
+            <div class="row-det">Python · Kafka · ClickHouse · GCP · energy markets</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">+7.2% acc</div>
+            <div class="cond">Flow Traders · 2024–25</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:88%" id="b1">
+          <div class="row-left">
+            <div class="row-name">Physics Intuition</div>
+            <div class="row-det">Stat mech · QFT · philosophy of science</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">A*A*A*A*</div>
+            <div class="cond">Oxford MSc · 2019–23</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:80%" id="b2">
+          <div class="row-left">
+            <div class="row-name">DeFi / Blockchain</div>
+            <div class="row-det">Solidity · ZK proofs · on-chain credit</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">ETHBrussels 🥇</div>
+            <div class="cond">5 hackathons · shipped</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:71%" id="b3">
+          <div class="row-left">
+            <div class="row-name">Market Making</div>
+            <div class="row-det">Delta-neutral hedging · Euro Stoxx options</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">3 firms</div>
+            <div class="cond">Maven · IMC · Optiver</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:62%" id="b4">
+          <div class="row-left">
+            <div class="row-name">Zero→One Building</div>
+            <div class="row-det">iOS shipped · 100 users · 50-person team</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">2 cos</div>
+            <div class="cond">EF · fair co-founder</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:50%" id="b5">
+          <div class="row-left">
+            <div class="row-name">AI Research</div>
+            <div class="row-det">LLM hallucination · phase transition theory</div>
+          </div>
+          <div class="row-right">
+            <div class="metric a">active</div>
+            <div class="cond">LLMPhaseTransition</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:36%" id="b6">
+          <div class="row-left">
+            <div class="row-name">Hackathon Alpha</div>
+            <div class="row-det">DeFi · AI · distributed compute · 3 prizes</div>
+          </div>
+          <div class="row-right">
+            <div class="metric g">10+</div>
+            <div class="cond">events shipped</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ASK ──────────────────────────────────────── -->
+    <div class="side ask">
+      <div class="col-head">
+        <span class="col-title r">ASK — What I Want</span>
+        <span class="col-sub">Seeking</span>
+      </div>
+      <div class="rows">
+
+        <div class="row" style="--d:96%" id="a0">
+          <div class="row-left">
+            <div class="row-name">Hard AI + Markets problems</div>
+            <div class="row-det">Unsolved. Real constraints. Mission-driven.</div>
+          </div>
+          <div class="row-right">
+            <div class="metric r">IOC</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:82%" id="a1">
+          <div class="row-left">
+            <div class="row-name">Technical co-founder</div>
+            <div class="row-det">Complementary skills. High conviction.</div>
+          </div>
+          <div class="row-right">
+            <div class="metric r">GTC</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:74%" id="a2">
+          <div class="row-left">
+            <div class="row-name">Crypto × Quant intersection</div>
+            <div class="row-det">DeFi market structure. On-chain data.</div>
+          </div>
+          <div class="row-right">
+            <div class="metric r">GTC</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:60%" id="a3">
+          <div class="row-left">
+            <div class="row-name">First-principles thinkers</div>
+            <div class="row-det">Physics / math background preferred.</div>
+          </div>
+          <div class="row-right">
+            <div class="metric m">GTC</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:46%" id="a4">
+          <div class="row-left">
+            <div class="row-name">Research collaboration</div>
+            <div class="row-det">LLMs · microstructure · stat mech</div>
+          </div>
+          <div class="row-right">
+            <div class="metric m">DAY</div>
+          </div>
+        </div>
+
+        <div class="row" style="--d:30%" id="a5">
+          <div class="row-left">
+            <div class="row-name">Seed / pre-seed capital</div>
+            <div class="row-det">Thesis-driven. Interesting problem required.</div>
+          </div>
+          <div class="row-right">
+            <div class="metric m">GTC</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOTTER ────────────────────────────────────── -->
+  <div class="blotter">
+    <div class="bl-head"><div class="pulse"></div>TRADE BLOTTER — RECENT FILLS</div>
+    <div class="bl-rows">
+      <div class="bl-row">
+        <span class="bl-t">2024-09</span><span class="bl-b">BUY</span>
+        <span class="bl-name">FLOW_TRADERS.QUANT — ML pricing, energy markets</span>
+        <span class="bl-p">+7.2% acc · −80% DT</span>
+        <span class="tag filled">FILLED</span>
+      </div>
+      <div class="bl-row">
+        <span class="bl-t">2024-06</span><span class="bl-b">BUY</span>
+        <span class="bl-name">BLOCKROCK — on-chain fund management · ETHBrussels</span>
+        <span class="bl-p">First place</span>
+        <span class="tag winner">WINNER</span>
+      </div>
+      <div class="bl-row">
+        <span class="bl-t">2024-03</span><span class="bl-b">BUY</span>
+        <span class="bl-name">HEDGY — delta-neutral AMM · Optiver Optibook</span>
+        <span class="bl-p">Optiver comp</span>
+        <span class="tag top">TOP 10</span>
+      </div>
+      <div class="bl-row">
+        <span class="bl-t">2024-01</span><span class="bl-b">BUY</span>
+        <span class="bl-name">VOUCH_FINANCE — undercollateralized DeFi lending</span>
+        <span class="bl-p">—</span>
+        <span class="tag fin">FINALIST</span>
+      </div>
+      <div class="bl-row">
+        <span class="bl-t">2023-09</span><span class="bl-b">BUY</span>
+        <span class="bl-name">EX2.1 — decentralized compute · AI Hack London</span>
+        <span class="bl-p">AI Hack LDN</span>
+        <span class="tag fin">FINALIST</span>
+      </div>
+      <div class="bl-row">
+        <span class="bl-t">2024→</span><span class="bl-b">BUY</span>
+        <span class="bl-name">LLMPHASETRANSITION — physics → LLM hallucination</span>
+        <span class="bl-p">ongoing</span>
+        <span class="tag open">OPEN</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="mailto:mariia.a.pavlenko@gmail.com">mariia.a.pavlenko@gmail.com</a>
+  <span class="sep">|</span>
+  <a href="https://github.com/ppo6" target="_blank">github.com/ppo6</a>
+  <span class="sep">|</span>
+  <a href="https://x.com/mmmhedge" target="_blank">@mmmhedge</a>
+  <span class="sep">|</span>
+  <a href="/cv.pdf" target="_blank">CV ↓</a>
+</div>
+
+<script is:inline>
+  // Clock
+  const clk = document.getElementById('clk');
+  function tick() { clk.textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+  tick(); setInterval(tick, 1000);
+
+  // Live depth-bar animation — slightly shift each row's depth
+  const bidRows  = ['b0','b1','b2','b3','b4','b5','b6'];
+  const askRows  = ['a0','a1','a2','a3','a4','a5'];
+  const baseBid  = [94, 88, 80, 71, 62, 50, 36];
+  const baseAsk  = [96, 82, 74, 60, 46, 30];
+
+  function nudge(ids, bases) {
+    const i = Math.floor(Math.random() * ids.length);
+    const el = document.getElementById(ids[i]);
+    if (!el) return;
+    const delta = (Math.random() - 0.5) * 8;
+    const next  = Math.max(8, Math.min(98, bases[i] + delta));
+    el.style.setProperty('--d', next + '%');
+  }
+
+  setInterval(() => { nudge(bidRows, baseBid); nudge(askRows, baseAsk); }, 420);
+  setInterval(() => { nudge(bidRows, baseBid); }, 700);
+
+  // Random flash on a bid row — simulates a "hit"
+  setInterval(() => {
+    const id = bidRows[Math.floor(Math.random() * bidRows.length)];
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('flash-g');
+    setTimeout(() => el.classList.remove('flash-g'), 180);
+  }, 2800);
+
+  // Random flash on an ask row
+  setInterval(() => {
+    const id = askRows[Math.floor(Math.random() * askRows.length)];
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('flash-r');
+    setTimeout(() => el.classList.remove('flash-r'), 180);
+  }, 4100);
+
+  // Cycle best-bid text
+  const bids = ['ML+Quant','Physics','DeFi/Blockchain','Market Making','AI Research'];
+  let bi = 0;
+  const bb = document.getElementById('bb');
+  setInterval(() => { bi = (bi+1)%bids.length; bb.textContent = bids[bi]; }, 3500);
+</script>
+</Layout>

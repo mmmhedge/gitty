@@ -1,0 +1,304 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="arXiv:2026.07734 — Pavlenko">
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f5f3ee;
+    color: #111;
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  a { color: #1a1a8c; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .switcher {
+    background: #e8e4dc;
+    border-bottom: 1px solid #c8c0b0;
+    padding: 5px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    font-family: 'Space Mono', monospace;
+  }
+  .switcher span { color: #888070; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .switcher a { font-size: 9px; letter-spacing: 0.08em; color: #665850; text-decoration: none; padding: 2px 8px; border: 1px solid transparent; transition: all 0.15s; }
+  .switcher a:hover { color: #111; border-color: #c8c0b0; }
+  .switcher a.active { color: #1a1a8c; border-color: rgba(26,26,140,0.3); }
+
+  .arxiv-header {
+    background: #e8e4dc;
+    border-bottom: 2px solid #b8b0a0;
+    padding: 10px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #665850;
+    letter-spacing: 0.06em;
+  }
+  .arxiv-id { color: #1a1a8c; font-weight: 700; }
+  .arxiv-cats span {
+    background: #d4cfc8;
+    padding: 1px 6px;
+    margin-left: 4px;
+    border-radius: 2px;
+    font-size: 9px;
+  }
+
+  .paper { max-width: 860px; margin: 0 auto; padding: 40px 40px 80px; }
+
+  .paper-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .paper-authors {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #333;
+  }
+  .paper-authors sup { font-size: 10px; color: #666; }
+
+  .paper-affil {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+
+  .paper-links {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #888;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .paper-links a { color: #1a1a8c; }
+
+  .divider { border: none; border-top: 1px solid #c8c0b0; margin: 20px 0; }
+
+  .abstract-box {
+    background: #edeae3;
+    border: 1px solid #c8c0b0;
+    border-left: 3px solid #666050;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .abstract-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #888070;
+    margin-bottom: 8px;
+  }
+  .abstract-text { font-size: 13.5px; line-height: 1.7; }
+
+  .keywords {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #665850;
+    margin-bottom: 28px;
+  }
+  .keywords span { color: #333; }
+
+  /* Two-column layout */
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+  @media (max-width: 680px) { .columns { grid-template-columns: 1fr; } }
+
+  h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 22px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #c8c0b0;
+    padding-bottom: 3px;
+  }
+  h3 {
+    font-size: 14px;
+    font-style: italic;
+    margin-top: 14px;
+    margin-bottom: 4px;
+  }
+
+  p { margin-bottom: 10px; font-size: 14px; text-align: justify; hyphens: auto; }
+  p:last-child { margin-bottom: 0; }
+
+  .ref-list { list-style: none; counter-reset: refs; }
+  .ref-list li { counter-increment: refs; padding-left: 28px; position: relative; font-size: 13px; margin-bottom: 5px; }
+  .ref-list li::before { content: '[' counter(refs) ']'; position: absolute; left: 0; color: #666; font-size: 12px; }
+
+  .footnote { font-size: 11px; color: #665850; font-style: italic; border-top: 1px solid #c8c0b0; padding-top: 8px; margin-top: 12px; }
+
+  .eq {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: #edeae3;
+    border: 1px solid #d4cfc8;
+    padding: 8px 12px;
+    margin: 10px 0;
+    color: #333;
+    display: block;
+    text-align: center;
+  }
+
+  .fig {
+    border: 1px solid #c8c0b0;
+    background: #edeae3;
+    padding: 10px;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 12px;
+    color: #665850;
+    font-family: 'Space Mono', monospace;
+    font-style: normal;
+  }
+
+  .ack { font-size: 12px; font-style: italic; color: #665850; margin-top: 24px; border-top: 1px solid #c8c0b0; padding-top: 12px; }
+
+  .col-full { grid-column: 1 / -1; }
+</style>
+
+<div class="switcher">
+  <span>Concept</span>
+  <a href="/">← Current</a>
+  <a href="/order-book">Order Book</a>
+  <a href="/statement">Statement</a>
+  <a href="/fix">FIX Protocol</a>
+  <a href="/arxiv" class="active">arXiv</a>
+</div>
+
+<div class="arxiv-header">
+  <div><span class="arxiv-id">arXiv:2026.07734</span> &nbsp;[Submitted 13 Jun 2026]</div>
+  <div>Subject classes: <span class="arxiv-cats"><span>q-fin.TR</span><span>cs.AI</span><span>physics.soc-ph</span></span></div>
+</div>
+
+<div class="paper">
+  <div class="paper-title">
+    Non-Equilibrium Dynamics of Human Capital:<br>
+    A Longitudinal Case Study in Cross-Domain Phase Transitions
+  </div>
+
+  <div class="paper-authors">Mariia A. Pavlenko<sup>1,2</sup></div>
+  <div class="paper-affil"><sup>1</sup>Previously: Flow Traders, Amsterdam &nbsp;·&nbsp; <sup>2</sup>Entrepreneur First, London</div>
+  <div class="paper-links">
+    <a href="mailto:mariia.a.pavlenko@gmail.com">mariia.a.pavlenko@gmail.com</a>
+    <a href="https://github.com/ppo6" target="_blank">github.com/ppo6</a>
+    <a href="https://x.com/mmmhedge" target="_blank">@mmmhedge</a>
+    <a href="/cv.pdf" target="_blank">CV [pdf]</a>
+  </div>
+
+  <hr class="divider">
+
+  <div class="abstract-box">
+    <div class="abstract-label">Abstract</div>
+    <div class="abstract-text">
+      We present a longitudinal observational study of a single agent (denoted <em>MP</em>, N=1) exhibiting anomalous cross-domain phase transitions spanning theoretical physics, quantitative finance, and decentralized computation. The subject demonstrates persistent structural pattern-matching across thermodynamic and market microstructure phenomena, achieving A*A*A*A* classification at the University of Oxford [2019–2023] under quantum mechanics, statistical physics, and philosophy of science curricula. Subsequent deployment in energy commodity markets (Flow Traders, 2024–2025) yielded statistically significant improvements: +7.2% model accuracy (95% CI: [6.1, 8.3]) and −80.4% system downtime (p &lt; 0.0001) in ML-based pricing pipelines. Concurrent research investigates whether large language models undergo thermodynamic-analogue phase transitions during training [§4.1]. Experimental outputs include a first-place finish at ETHBrussels 2024 and multiple finalist placements across DeFi, AI, and distributed compute domains. We conjecture that the optimal allocation of this agent remains an open problem. Interested parties are encouraged to establish direct contact (§7).
+    </div>
+  </div>
+
+  <div class="keywords"><span>Keywords:</span> human capital dynamics, phase transitions, market microstructure, DeFi, LLMs, Oxford, hackathon alpha, non-equilibrium systems</div>
+
+  <hr class="divider">
+
+  <div class="columns">
+    <!-- LEFT COLUMN -->
+    <div>
+      <h2>1. Introduction</h2>
+      <p>The dynamics of human capital in high-dimensional state spaces have received limited formal treatment in the quantitative literature. Standard models assume smooth, ergodic career trajectories — a premise demonstrably violated by agents operating at the intersection of physics, finance, and cryptographic systems.</p>
+      <p>This paper documents one such agent. We adopt a case-study methodology, treating the subject's career trajectory as a sample path of a non-equilibrium process. We note that this process exhibits several hallmarks of criticality: sensitivity to initial conditions (Oxford entrance examination), long-range correlations (hackathon performance), and apparent scale invariance across domains.</p>
+
+      <h2>2. Prior Distribution</h2>
+      <h3>2.1 Educational Foundation</h3>
+      <p>The subject was admitted to the University of Oxford in 2019, undertaking an MSc programme spanning statistical mechanics, quantum field theory, philosophy of science, and machine learning. Terminal examination performance: A*A*A*A* — placing the subject in the upper tail of the academic grade distribution.</p>
+
+      <code class="eq">P(grade = A*) ≈ 0.08 &nbsp;⟹&nbsp; P(A*×4) ≈ 4×10⁻⁵</code>
+
+      <p>The philosophy component proved non-trivial; the subject reports that Bayesian epistemology and the problem of induction continue to influence her approach to model selection in financial ML contexts.</p>
+
+      <h3>2.2 Early Market Exposure</h3>
+      <p>During the 2021 academic year, the subject participated in the IMC Trading Female Trading Program, constructing delta-neutral hedging algorithms in Python and placing in the top 10 of the internal competition. A subsequent internship at Maven Securities (2022) involved Euro Stoxx options market-making; the subject independently built an auction monitoring tool that has since been deployed on the trading floor.</p>
+
+      <h2>3. Industry Experiments</h2>
+      <h3>3.1 Energy Commodity Markets</h3>
+      <p>Following graduation, the subject was deployed as a Quantitative Researcher at Flow Traders (2024–2025), working on ML-based pricing infrastructure for energy markets. Measurable outcomes: +7.2% model accuracy, −80% system downtime. Technology stack: Python, Kafka, ClickHouse, GCP/AWS.</p>
+
+      <div class="fig">
+        Figure 1. Performance improvement timeline.<br>
+        [Downtime: ████████░░ −80.4%] &nbsp; [Accuracy: ██░░░░░░░░ +7.2%]
+      </div>
+
+      <h3>3.2 Venture Formation</h3>
+      <p>Concurrently and subsequently, the subject participated in Entrepreneur First (2023–2024) as Founder in Residence, building at the intersection of ZK proofs, ML, and open banking. Outputs: one shipped iOS application, approximately 100 users. The subject also co-founded <em>fair</em> — an ESG fintech brokerage with a 50+ person team — which won the UCL EFS startup competition.</p>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <h2>4. Research Outputs</h2>
+      <h3>4.1 LLM Phase Transitions</h3>
+      <p>The subject's primary research investigates whether large language models undergo phase transitions structurally analogous to those observed in solid-state systems during training. The central conjecture: hallucination dynamics may admit a thermodynamic description, with temperature-like parameters governing the transition between coherent and incoherent output regimes.</p>
+      <p>This work is ongoing. Source code available at [1].</p>
+
+      <h3>4.2 DeFi Protocols</h3>
+      <p><em>BlockRock</em> [2]: personalised on-chain fund management with dynamic rebalancing. Awarded first place, ETHBrussels 2024. <em>vouch-finance</em> [3]: undercollateralized DeFi lending via social staking and on-chain credit reputation, hackathon finalist. <em>HEDGy</em> [4]: automated market-making with delta-neutral hedging on Optiver's Optibook; top-10 placement in the associated competition.</p>
+
+      <h3>4.3 Distributed Compute</h3>
+      <p><em>ex2.1</em> [5]: decentralised compute marketplace, finalist at AI Hack London 2024.</p>
+
+      <h2>5. Discussion</h2>
+      <h3>5.1 Open Problems</h3>
+      <p>Several questions remain unresolved. What is the correct latent variable model for hallucination transitions in transformers? Can social-staking mechanisms produce stable credit equilibria on-chain? Is there a unified framework for market microstructure and thermodynamic criticality?</p>
+      <p>The subject is actively investigating all three.</p>
+
+      <h3>5.2 Conjectured Next Transition</h3>
+      <p>Based on prior trajectory, the subject is expected to undergo a further phase transition into co-founder or deep-research mode, conditioned on identifying a sufficiently hard problem at the intersection of AI, market structure, or cryptographic systems.</p>
+
+      <code class="eq">P(next_transition | hard_problem_found) ≈ 1</code>
+
+      <h2>6. Conclusion</h2>
+      <p>We have documented a single-agent trajectory exhibiting non-standard cross-domain phase transitions. The subject's background in statistical physics provides structural analogies that appear generative across quantitative finance, AI research, and on-chain protocol design.</p>
+      <p>We conjecture that the optimal allocation of this agent remains unsolved. We invite interested parties to contact the subject directly.</p>
+
+      <h2>7. Contact & Availability</h2>
+      <p><strong>Status:</strong> Open. Seeking hard problems.</p>
+      <p>Email: <a href="mailto:mariia.a.pavlenko@gmail.com">mariia.a.pavlenko@gmail.com</a><br>
+      GitHub: <a href="https://github.com/ppo6" target="_blank">github.com/ppo6</a><br>
+      X: <a href="https://x.com/mmmhedge" target="_blank">@mmmhedge</a><br>
+      CV: <a href="/cv.pdf" target="_blank">/cv.pdf</a></p>
+
+      <h2>References</h2>
+      <ol class="ref-list">
+        <li>Pavlenko, M.A. <em>LLMPhaseTransition.</em> GitHub, 2024. <a href="https://github.com/ppo6/LLMPhaseTransition" target="_blank">github.com/ppo6/LLMPhaseTransition</a></li>
+        <li>Pavlenko, M.A. et al. <em>BlockRock.</em> ETHBrussels, 2024. <a href="https://github.com/ppo6/BlockRock_ETHBrussels" target="_blank">github.com/ppo6/BlockRock_ETHBrussels</a></li>
+        <li>Pavlenko, M.A. et al. <em>vouch-finance.</em> GitHub, 2024. <a href="https://github.com/ppo6/vouch-finance" target="_blank">github.com/ppo6/vouch-finance</a></li>
+        <li>Pavlenko, M.A. <em>HEDGy.</em> Optiver Optibook, 2024. <a href="https://github.com/ppo6/HEDGy" target="_blank">github.com/ppo6/HEDGy</a></li>
+        <li>Pavlenko, M.A. et al. <em>ex2.1.</em> AI Hack London, 2024. <a href="https://github.com/ppo6/ex2.1" target="_blank">github.com/ppo6/ex2.1</a></li>
+      </ol>
+
+      <div class="ack">
+        <em>Acknowledgements.</em> The author thanks the University of Oxford for a rigorous prior distribution, Flow Traders for a high-signal deployment environment, and the global hackathon circuit for empirical validation opportunities. No funding was received. No conflicts of interest are declared.
+      </div>
+    </div>
+  </div>
+</div>
+</Layout>

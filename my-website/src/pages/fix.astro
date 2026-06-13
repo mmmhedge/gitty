@@ -1,0 +1,325 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="PAVLENKO.M.A — FIX.4.2">
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: #000;
+    color: #ffaa22;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  a { color: #ffaa22; }
+
+  /* ── switcher ─────────────────────────────────── */
+  .sw {
+    background: #060400;
+    border-bottom: 1px solid #1c1100;
+    padding: 4px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .sw span { color: #4a3000; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .sw a { font-size: 9px; color: #6b4510; text-decoration: none; padding: 2px 7px; border: 1px solid transparent; transition: all 0.15s; }
+  .sw a:hover { color: #ffaa22; border-color: #3a2400; }
+  .sw a.on { color: #ffaa22; border-color: rgba(255,170,34,0.35); }
+
+  /* ── header ───────────────────────────────────── */
+  .hdr {
+    background: #060400;
+    border-bottom: 1px solid #1c1100;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .hdr-title { font-size: 11px; color: #ffaa22; letter-spacing: 0.08em; }
+  .hdr-title em { color: #664400; font-style: normal; font-size: 10px; margin-left: 12px; }
+  .hdr-right { font-size: 10px; color: #2e1e00; letter-spacing: 0.06em; }
+  .live { color: #ffaa22; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  /* ── output ───────────────────────────────────── */
+  .out {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 22px;
+    scrollbar-width: thin;
+    scrollbar-color: #1c1100 #000;
+  }
+  .out::-webkit-scrollbar { width: 3px; }
+  .out::-webkit-scrollbar-track { background: #000; }
+  .out::-webkit-scrollbar-thumb { background: #1c1100; }
+
+  /* preamble */
+  .pre { color: #7a5520; font-size: 11px; margin-bottom: 16px; line-height: 1.9; }
+  .pre .hi { color: #ddaa44; }
+
+  /* FIX message lines */
+  .fix-block { margin-bottom: 4px; }
+  .fl { display: flex; align-items: baseline; opacity: 0; transition: opacity 0.08s; }
+  .fl.show { opacity: 1; }
+  .ft { color: #886622; min-width: 42px; flex-shrink: 0; user-select: none; }  /* tag number — amber */
+  .feq { color: #4a2e00; margin: 0 3px; user-select: none; }                   /* = — dim */
+  .fv { color: #ffcc55; font-weight: 700; }                                     /* value — BRIGHT */
+  .fv.dim { color: #ddaa44; font-weight: 400; }                                 /* secondary value */
+  .fc { color: #6b4510; margin-left: 22px; font-size: 10px; }                  /* comment — dim but readable */
+  .fsep { border-top: 1px solid #0d0800; margin: 6px 0; }
+
+  /* interactive response */
+  .resp { color: #cc8833; font-size: 11px; white-space: pre; }
+  .resp .rh { color: #ffcc55; }
+  .resp .rd { color: #443300; }
+
+  /* ── input ────────────────────────────────────── */
+  .inp-wrap {
+    border-top: 1px solid #1c1100;
+    background: #030200;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .prompt { color: #664400; flex-shrink: 0; }
+  .cmd {
+    background: transparent; border: none; outline: none;
+    color: #ffaa22;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    flex: 1;
+    caret-color: #ffaa22;
+  }
+  .hint { color: #1c1100; font-size: 9px; letter-spacing: 0.07em; flex-shrink: 0; }
+</style>
+
+<div class="sw">
+  <span>Concept</span>
+  <a href="/">← Original</a>
+  <a href="/order-book">Order Book</a>
+  <a href="/fix" class="on">FIX Protocol</a>
+</div>
+
+<div class="hdr">
+  <div class="hdr-title">
+    FIX ENGINE v4.2 — PAVLENKO.M.A — PROFILE SESSION
+    <em>// FIX: the universal messaging standard for financial markets — my biography as a trade</em>
+  </div>
+  <div class="hdr-right"><span class="live">●</span>&nbsp; LOGON: <span id="logon">--:--:--</span> GMT</div>
+</div>
+
+<div class="out" id="out">
+  <div class="pre">
+    <span class="hi">&gt;</span> Receiving message from <span class="hi">PAVLENKO.MARIIA.A</span> [MsgType=<span class="hi">BIO</span>]<br>
+    <span class="hi">&gt;</span> BeginString=FIX.4.2 · SenderCompID=PAVLENKO.M.A · TargetCompID=*<br>
+    <span class="hi">&gt;</span> Type <span class="hi">HELP</span> for queries &nbsp;·&nbsp; prefix <span class="hi">?</span> to look up a tag (e.g. <span class="hi">?55</span>)
+  </div>
+
+  <!-- All lines start hidden; JS reveals them one by one -->
+  <div class="fix-block" id="msg">
+    <div class="fl"><span class="ft">8</span><span class="feq">=</span><span class="fv">FIX.4.2</span><span class="fc">// BeginString</span></div>
+    <div class="fl"><span class="ft">9</span><span class="feq">=</span><span class="fv dim">347</span><span class="fc">// BodyLength</span></div>
+    <div class="fl"><span class="ft">35</span><span class="feq">=</span><span class="fv">BIO</span><span class="fc">// MsgType: Biographical Profile</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">49</span><span class="feq">=</span><span class="fv">PAVLENKO.MARIIA.A</span><span class="fc">// SenderCompID</span></div>
+    <div class="fl"><span class="ft">56</span><span class="feq">=</span><span class="fv">*</span><span class="fc">// TargetCompID: anyone</span></div>
+    <div class="fl"><span class="ft">52</span><span class="feq">=</span><span class="fv dim">19990000-00:00:00.000</span><span class="fc">// SendingTime: origin timestamp</span></div>
+    <div class="fl"><span class="ft">34</span><span class="feq">=</span><span class="fv dim">1</span><span class="fc">// MsgSeqNum</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">1</span><span class="feq">=</span><span class="fv dim">HUMAN_CAPITAL_001</span><span class="fc">// Account</span></div>
+    <div class="fl"><span class="ft">11</span><span class="feq">=</span><span class="fv dim">MP-2026-001</span><span class="fc">// ClOrdID</span></div>
+    <div class="fl"><span class="ft">55</span><span class="feq">=</span><span class="fv">MP</span><span class="fc">// Symbol</span></div>
+    <div class="fl"><span class="ft">48</span><span class="feq">=</span><span class="fv">ppo6</span><span class="fc">// SecurityID: github.com/ppo6</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">100</span><span class="feq">=</span><span class="fv dim">GBR</span><span class="fc">// ExDestination: United Kingdom</span></div>
+    <div class="fl"><span class="ft">207</span><span class="feq">=</span><span class="fv dim">OXFORD.PHYS.PHIL</span><span class="fc">// SecurityExchange: prior education</span></div>
+    <div class="fl"><span class="ft">54</span><span class="feq">=</span><span class="fv">1</span><span class="fc">// Side: BUY (building)</span></div>
+    <div class="fl"><span class="ft">40</span><span class="feq">=</span><span class="fv">K</span><span class="fc">// OrdType: Market with Leftover as Limit (selective)</span></div>
+    <div class="fl"><span class="ft">44</span><span class="feq">=</span><span class="fv">PRICELESS</span><span class="fc">// Price</span></div>
+    <div class="fl"><span class="ft">38</span><span class="feq">=</span><span class="fv dim">1</span><span class="fc">// OrderQty: one of a kind</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">167</span><span class="feq">=</span><span class="fv dim">HC</span><span class="fc">// SecurityType: Human Capital</span></div>
+    <div class="fl"><span class="ft">762</span><span class="feq">=</span><span class="fv">SEEKING_HARD_PROBLEMS</span><span class="fc">// SecuritySubType</span></div>
+    <div class="fl"><span class="ft">60</span><span class="feq">=</span><span class="fv dim">20190901-09:00:00.000</span><span class="fc">// TransactTime: Oxford matriculation</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">453</span><span class="feq">=</span><span class="fv dim">6</span><span class="fc">// NoPartyIDs: prior institutions</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">FLOW_TRADERS</span><span class="fc">// PartyID[1]: Quant Researcher 2024–25 · +7.2% acc · −80% DT</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">ENTREPRENEUR_FIRST</span><span class="fc">// PartyID[2]: Founder in Residence 2023 · iOS · 100 users</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">MAVEN_SECURITIES</span><span class="fc">// PartyID[3]: Trading Intern 2022 · Euro Stoxx · return offer</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">IMC_TRADING</span><span class="fc">// PartyID[4]: Female Trading Program 2021 · top 10</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">FAIR_COFOUND</span><span class="fc">// PartyID[5]: ESG fintech co-founder 2021–22 · 50+ team</span></div>
+    <div class="fl"><span class="ft">448</span><span class="feq">=</span><span class="fv">UNIV_OF_OXFORD</span><span class="fc">// PartyID[6]: MSc Physics & Phil · A*A*A*A* · 2019–23</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">58</span><span class="feq">=</span><span class="fv">Building at intersection of AI, markets, and crypto.</span><span class="fc">// Text</span></div>
+    <div class="fl"><span class="ft">336</span><span class="feq">=</span><span class="fv dim">ETHBRUSSELS_WINNER|AI_HACK_FINALIST|OPTIVER_TOP10|EF_ALUMNI</span><span class="fc">// Achievements</span></div>
+
+    <div class="fl fsep"></div>
+
+    <div class="fl"><span class="ft">10</span><span class="feq">=</span><span class="fv dim">042</span><span class="fc">// CheckSum</span></div>
+  </div>
+
+  <div id="resp"></div>
+</div>
+
+<div class="inp-wrap">
+  <span class="prompt">FIX&gt;</span>
+  <input class="cmd" id="cmd" type="text" autocomplete="off" spellcheck="false">
+  <span class="hint">HELP &nbsp;·&nbsp; PROJECTS &nbsp;·&nbsp; EXP &nbsp;·&nbsp; CONTACT &nbsp;·&nbsp; ?[tag]</span>
+</div>
+
+<script is:inline>
+  // Logon time
+  document.getElementById('logon').textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  // Typewriter reveal — each .fl line appears with a staggered delay
+  const lines = document.querySelectorAll('#msg .fl');
+  lines.forEach((el, i) => {
+    setTimeout(() => el.classList.add('show'), 100 + i * 38);
+  });
+
+  // Command handler
+  const cmdEl  = document.getElementById('cmd');
+  const resp   = document.getElementById('resp');
+  const outEl  = document.getElementById('out');
+
+  const CMDS = {
+    HELP: `
+<span class="rh">COMMANDS:</span>
+  <span class="rh">HELP</span>       — this message
+  <span class="rh">STATUS</span>     — availability & seeking
+  <span class="rh">PROJECTS</span>   — all shipped projects
+  <span class="rh">EXP</span>        — experience summary
+  <span class="rh">CONTACT</span>    — contact details
+  <span class="rh">CV</span>         — open CV PDF
+  <span class="rh">CLEAR</span>      — clear responses
+  <span class="rd">?[tag]      — lookup FIX field   e.g. ?55 ?48 ?58</span>`,
+
+    STATUS: `
+<span class="rh">STATUS: OPEN — SEEKING</span>
+  <span class="rd">Seeking   :</span> Hard problems at AI × markets × crypto
+  <span class="rd">Type      :</span> Co-founder · early-stage · research
+  <span class="rd">Location  :</span> London, GBR (remote-flexible)
+  <span class="rd">Available :</span> Immediately
+  <span class="rd">Contact   :</span> mariia.a.pavlenko@gmail.com`,
+
+    PROJECTS: `
+<span class="rh">SHIPPED PROJECTS:</span>
+  <span class="rd">Symbol               Lang       Badge</span>
+  LLMPhaseTransition   Python     research       — phase transitions in LLM hallucination
+  BlockRock            Solidity   <span class="rh">🥇 WINNER</span>      — on-chain fund mgmt · ETHBrussels 2024
+  vouch-finance        Solidity   finalist       — undercollateralized DeFi lending
+  HEDGy                Python     <span class="rh">top 10</span>         — AMM + delta-neutral · Optiver Optibook
+  ex2.1                Python     finalist       — decentralized compute · AI Hack LDN
+  ETHDenver-2023       Solidity   hackathon      — ETHDenver 2023`,
+
+    EXP: `
+<span class="rh">EXPERIENCE:</span>
+  <span class="rd">Period     Role                       Firm</span>
+  2024→25    Quant Researcher           Flow Traders        ML pricing · energy · +7.2% acc · −80% DT
+  2023→24    Founder in Residence       Entrepreneur First  ZK+ML+banking · iOS · 100 users
+  2019→23    MSc Physics & Philosophy   Oxford              A*A*A*A*
+  2022       Trading Intern             Maven Securities    Euro Stoxx options · return offer
+  2021       Female Trading Program     IMC Trading         Delta-neutral · top 10
+  2021→22    Co-founder                 fair                ESG fintech · 50+ team · UCL EFS winner`,
+
+    CONTACT: `
+<span class="rh">CONTACT:</span>
+  <span class="rd">Email :</span> mariia.a.pavlenko@gmail.com
+  <span class="rd">GitHub:</span> github.com/ppo6
+  <span class="rd">X     :</span> @mmmhedge
+  <span class="rd">CV    :</span> /cv.pdf`,
+  };
+
+  const TAGS = {
+    '8':'BeginString = FIX.4.2',
+    '9':'BodyLength = 347',
+    '35':'MsgType = BIO (Biographical Profile)',
+    '49':'SenderCompID = PAVLENKO.MARIIA.A',
+    '56':'TargetCompID = * (anyone)',
+    '52':'SendingTime = 19990000 (origin timestamp)',
+    '1':'Account = HUMAN_CAPITAL_001',
+    '11':'ClOrdID = MP-2026-001',
+    '55':'Symbol = MP',
+    '48':'SecurityID = ppo6 (github.com/ppo6)',
+    '22':'IDSource = GitHub',
+    '100':'ExDestination = GBR (United Kingdom)',
+    '207':'SecurityExchange = OXFORD.PHYS.PHIL',
+    '15':'Currency = GBP',
+    '54':'Side = 1 (BUY — building)',
+    '40':'OrdType = K (Market with Leftover as Limit)',
+    '44':'Price = PRICELESS',
+    '38':'OrderQty = 1 (one of a kind)',
+    '58':'Text = Building at intersection of AI, markets, and crypto.',
+    '336':'Achievements = ETHBRUSSELS_WINNER|AI_HACK_FINALIST|OPTIVER_TOP10|EF_ALUMNI',
+    '167':'SecurityType = HC (Human Capital)',
+    '762':'SecuritySubType = SEEKING_HARD_PROBLEMS',
+    '453':'NoPartyIDs = 6',
+    '448':'PartyID = [FLOW_TRADERS|EF|MAVEN|IMC|FAIR|OXFORD]',
+    '10':'CheckSum = 042',
+  };
+
+  function append(html) {
+    const d = document.createElement('div');
+    d.className = 'resp';
+    d.innerHTML = html;
+    resp.appendChild(d);
+    outEl.scrollTop = outEl.scrollHeight;
+  }
+
+  // Periodic heartbeats when idle
+  let lastInput = Date.now();
+  setInterval(() => {
+    if (Date.now() - lastInput > 9000) {
+      const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      append(`<span class="rd">[35=0] Heartbeat · ${t} GMT · Session Active</span>`);
+    }
+  }, 9000);
+
+  cmdEl.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    lastInput = Date.now();
+    const raw = cmdEl.value.trim();
+    cmdEl.value = '';
+    if (!raw) return;
+    const up = raw.toUpperCase();
+
+    append(`\n<span class="rd">FIX&gt; ${raw}</span>`);
+
+    if (up === 'CLEAR') { resp.innerHTML = ''; }
+    else if (up === 'CV') { window.open('/cv.pdf','_blank'); append('<span class="rh">Opening /cv.pdf...</span>'); }
+    else if (up.startsWith('?')) {
+      const tag = up.slice(1);
+      const v = TAGS[tag];
+      append(v ? `[<span class="rh">${tag}</span>] <span class="rh">${v}</span>` : `[${tag}] <span class="rd">Unknown tag</span>`);
+    } else if (CMDS[up]) {
+      append(CMDS[up]);
+    } else {
+      append(`<span class="rd">[35=REJ] Unknown: ${raw} — type HELP</span>`);
+    }
+  });
+
+  cmdEl.focus();
+</script>
+</Layout>

@@ -1,0 +1,341 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+
+const projects = [
+  {
+    name: 'LLMPhaseTransition',
+    lang: 'Python',
+    badge: 'research',
+    desc: 'Do LLMs undergo phase transitions? Applying solid-state physics intuitions to hallucination dynamics.',
+    tags: ['physics', 'ml'],
+    url: 'https://github.com/ppo6/LLMPhaseTransition',
+  },
+  {
+    name: 'BlockRock',
+    lang: 'Solidity',
+    badge: 'ETHBrussels winner',
+    desc: 'Personalized on-chain fund management with dynamic rebalancing.',
+    tags: ['defi', 'ethereum'],
+    url: 'https://github.com/ppo6/BlockRock_ETHBrussels',
+  },
+  {
+    name: 'vouch-finance',
+    lang: 'Solidity',
+    badge: 'finalist',
+    desc: 'Undercollateralized DeFi lending via social staking and on-chain credit reputation.',
+    tags: ['defi', 'lending'],
+    url: 'https://github.com/ppo6/vouch-finance',
+  },
+  {
+    name: 'HEDGy',
+    lang: 'Python',
+    badge: 'top 10 · Optiver',
+    desc: 'Automated market-making with delta-neutral hedging on Optiver\'s Optibook.',
+    tags: ['quant', 'options'],
+    url: 'https://github.com/ppo6/HEDGy',
+  },
+  {
+    name: 'ex2.1',
+    lang: 'Python',
+    badge: 'AI Hack finalist',
+    desc: 'Decentralized compute marketplace. AI Hack London 2024.',
+    tags: ['ai', 'compute'],
+    url: 'https://github.com/ppo6/ex2.1',
+  },
+  {
+    name: 'ETHDenver-2023',
+    lang: 'Solidity',
+    badge: 'hackathon',
+    desc: 'ETHDenver 2023 submission.',
+    tags: ['ethereum'],
+    url: 'https://github.com/ppo6/ETHDenver-2023',
+  },
+];
+
+const experience = [
+  {
+    date: '2024 → 2025',
+    role: 'Quantitative Researcher',
+    company: 'Flow Traders',
+    desc: 'ML pricing engine for energy markets. 80%+ downtime reduction, 7.2% accuracy gain. Python · Kafka · ClickHouse · GCP/AWS.',
+  },
+  {
+    date: '2023 → 2024',
+    role: 'Founder in Residence',
+    company: 'Entrepreneur First',
+    desc: 'Built at intersection of ZK proofs, ML, and open banking. Shipped iOS app, 100 users.',
+  },
+  {
+    date: '2019 → 2023',
+    role: 'MSc Physics & Philosophy',
+    company: 'University of Oxford',
+    desc: 'A*A*A*A*. Machine learning, statistical analysis, advanced quantum physics.',
+  },
+  {
+    date: '2022',
+    role: 'Trading Intern',
+    company: 'Maven Securities',
+    desc: 'Options market-making on Euro Stoxx. Built auction monitoring tool now live on the trading floor. Return offer.',
+  },
+  {
+    date: '2021',
+    role: 'Female Trading Program',
+    company: 'IMC Trading',
+    desc: 'Delta-neutral hedging algorithms in Python. Top 10 in internal competition.',
+  },
+  {
+    date: '2021 → 2022',
+    role: 'Co-founder',
+    company: 'fair',
+    desc: 'ESG fintech brokerage. 50+ person team. Won UCL EFS startup competition.',
+  },
+];
+---
+
+<Layout title="Mary Pavlenko">
+  <nav class="nav" id="nav">
+    <a href="/" class="nav-logo">MP</a>
+    <div class="nav-links">
+      <a href="#projects">projects</a>
+      <a href="#experience">experience</a>
+      <a href="#writing">writing</a>
+      <a href="#contact">contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero: text left, chart right -->
+  <section class="hero">
+    <div class="hero-inner">
+
+      <!-- Left: all the text -->
+      <div>
+        <p class="hero-label" data-anim="1">Builder & founder · London</p>
+        <h1 class="hero-name" data-anim="2">Mary<br>Pavlenko</h1>
+        <p class="hero-sub" data-anim="3">
+          Oxford Physics & Philosophy. Ex-quant (Flow Traders).
+          Building at the intersection of AI, markets, and crypto.
+        </p>
+        <div class="hero-actions" data-anim="4">
+          <a href="#projects" class="btn-primary">Projects</a>
+          <a href="/cv.pdf" target="_blank" class="btn-secondary">CV ↗</a>
+        </div>
+        <p class="hero-creds" data-anim="5">
+          <span class="hi">Oxford Physics & Phil</span> ·
+          <span class="hi">ETHBrussels winner</span> ·
+          Flow Traders · AI Hack finalist · 10+ hackathons · EF alumni
+        </p>
+      </div>
+
+      <!-- Right: animated chart — no border, no box, just lines -->
+      <div class="hero-visual">
+        <canvas id="market-canvas"></canvas>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="section" id="projects">
+    <div class="section-label">Projects</div>
+    <div class="section-divider"></div>
+    <div class="projects-grid">
+      {projects.map((p) => (
+        <a class="project-card" href={p.url} target="_blank" rel="noopener">
+          <div class="project-badge">{p.badge}</div>
+          <div class="project-top">
+            <span class="project-lang">{p.lang}</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <div class="project-name">{p.name}</div>
+          <div class="project-desc">{p.desc}</div>
+          <div class="project-tags">
+            {p.tags.map((t) => <span class="tag">{t}</span>)}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="section" id="experience">
+    <div class="section-label">Experience</div>
+    <div class="section-divider"></div>
+    {experience.map((e) => (
+      <div class="exp-item">
+        <div class="exp-date">{e.date}</div>
+        <div>
+          <div class="exp-company">{e.company}</div>
+          <div class="exp-role">{e.role}</div>
+          <div class="exp-desc">{e.desc}</div>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- Writing -->
+  <section class="section" id="writing">
+    <div class="section-label">Writing</div>
+    <div class="section-divider"></div>
+    <div class="row-list">
+      <a class="row-item" href="https://x.com/mmmhedge" target="_blank" rel="noopener">
+        <span class="row-key live">X</span>
+        <span>@mmmhedge</span>
+      </a>
+      <div class="row-item">
+        <span class="row-key">Substack</span>
+        <span>Coming soon — AI, markets, building things</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="section-label">Contact</div>
+    <div class="section-divider"></div>
+    <div class="row-list">
+      <a class="row-item" href="mailto:mariia.a.pavlenko@gmail.com">
+        <span class="row-key">Email</span>
+        <span>mariia.a.pavlenko@gmail.com</span>
+      </a>
+      <a class="row-item" href="https://github.com/ppo6" target="_blank" rel="noopener">
+        <span class="row-key">GitHub</span>
+        <span>github.com/ppo6</span>
+      </a>
+      <a class="row-item" href="https://x.com/mmmhedge" target="_blank" rel="noopener">
+        <span class="row-key">X</span>
+        <span>@mmmhedge</span>
+      </a>
+      <a class="row-item" href="/cv.pdf" target="_blank">
+        <span class="row-key">CV</span>
+        <span>Download PDF ↓</span>
+      </a>
+    </div>
+  </section>
+
+  <footer style="padding:1.25rem clamp(1.5rem,5vw,4rem);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;">
+    <span style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.06em;color:var(--muted);">Mary Pavlenko</span>
+    <div style="display:flex;gap:1.25rem;">
+      <a href="https://github.com/ppo6" target="_blank" style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">GitHub</a>
+      <a href="https://x.com/mmmhedge" target="_blank" style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">X</a>
+    </div>
+  </footer>
+</Layout>
+
+<script is:inline>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // Market chart — drawn into the right-column canvas
+  // No background fill: lines float on the dark page background
+  (function () {
+    const canvas = document.getElementById('market-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const N = 6000;
+    const PX = 2.5;
+
+    function randn() {
+      return (Math.random() + Math.random() + Math.random() + Math.random() - 2) / 1.2;
+    }
+
+    function genPath(drift, vol, start) {
+      const p = new Float32Array(N);
+      p[0] = start;
+      for (let i = 1; i < N; i++) {
+        p[i] = Math.max(0.05, Math.min(0.95, p[i - 1] + drift + vol * randn()));
+      }
+      return p;
+    }
+
+    // Different starting positions so lines spread across the column height
+    const series = [
+      { p: genPath( 0.00010, 0.006, 0.30), color: 'rgba(34,211,238,0.7)',   lw: 1.5 },
+      { p: genPath(-0.00008, 0.008, 0.55), color: 'rgba(34,211,238,0.3)',   lw: 1   },
+      { p: genPath( 0.00005, 0.005, 0.72), color: 'rgba(148,163,184,0.25)', lw: 1   },
+      { p: genPath(-0.00012, 0.007, 0.18), color: 'rgba(34,211,238,0.15)',  lw: 0.8 },
+    ];
+
+    let offset = 0;
+    let rafId  = null;
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = canvas.offsetWidth  * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    function draw() {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      // Subtle grid — feels like a chart without overpowering
+      ctx.strokeStyle = 'rgba(30,41,59,0.4)';
+      ctx.lineWidth   = 0.5;
+      for (let i = 1; i < 10; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, i * h / 10);
+        ctx.lineTo(w, i * h / 10);
+        ctx.stroke();
+      }
+      for (let i = 1; i < 6; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * w / 6, 0);
+        ctx.lineTo(i * w / 6, h);
+        ctx.stroke();
+      }
+
+      // Price lines
+      const startIdx = Math.floor(offset / PX);
+      const xOff     = offset % PX;
+      const count    = Math.ceil(w / PX) + 2;
+
+      series.forEach(({ p, color, lw }, si) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = lw;
+        ctx.lineJoin    = 'round';
+        ctx.beginPath();
+        let moved = false;
+        for (let i = 0; i < count; i++) {
+          const x = i * PX - xOff;
+          const y = p[(startIdx + i) % N] * h;
+          if (!moved) { ctx.moveTo(x, y); moved = true; }
+          else          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Live dot on primary line
+        if (si === 0) {
+          const lx = (count - 2) * PX - xOff;
+          const ly = p[(startIdx + count - 2) % N] * h;
+          ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(34,211,238,1)'; ctx.fill();
+          ctx.beginPath(); ctx.arc(lx, ly, 7, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(34,211,238,0.12)'; ctx.fill();
+        }
+      });
+
+      offset = (offset + 0.4) % (N * PX);
+      rafId  = requestAnimationFrame(draw);
+    }
+
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) { resize(); draw(); } }
+      else { cancelAnimationFrame(rafId); rafId = null; }
+    });
+    obs.observe(canvas);
+
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(rafId); rafId = null; resize(); draw();
+    }, { passive: true });
+
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      resize(); draw();
+    }
+  })();
+</script>
