@@ -1,0 +1,6 @@
+auth/
+digests/
+config.toml
+.env
+__pycache__/
+*.pyc
