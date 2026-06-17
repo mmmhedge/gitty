@@ -1,0 +1,16 @@
+# twitter-digest config
+# Copy to config.toml and edit.
+
+[scrape]
+scroll_passes = 12     # how far back to scroll the timeline each run
+scroll_pause_ms = 800  # wait between scrolls, let tweets load
+
+[filter]
+# Tweets from these handles (no @) are dropped before summarization.
+exclude_handles = []
+# Tweets containing any of these substrings (case-insensitive) are dropped.
+exclude_keywords = []
+
+[summarize]
+model = "claude-sonnet-4-6"
+max_tweets = 150       # cap sent to the LLM per run, most-recent-first
