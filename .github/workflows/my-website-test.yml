@@ -1,0 +1,23 @@
+name: my-website tests
+
+on:
+  push:
+    paths:
+      - 'my-website/**'
+  pull_request:
+    paths:
+      - 'my-website/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm test
