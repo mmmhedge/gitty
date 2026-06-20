@@ -4,3 +4,5 @@ config.toml
 profile/README.md
 __pycache__/
 *.pyc
+.gstack/
+.env

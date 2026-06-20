@@ -1,5 +1,4 @@
-<p align="center">quant/builder  ·  mechanistic interp  ·  on-chain</p>
-<p align="center"><img src="https://komarev.com/ghpvc/?username=your-gh-handle&style=flat-square&color=586069" alt="profile views" /></p>
+<p align="center">quant/builder  ·  mechanistic interp  ·  on-chain<br><img src="https://komarev.com/ghpvc/?username=your-gh-handle&style=flat-square&color=586069" alt="profile views" /></p>
 
 ## What i do
 
@@ -24,10 +23,7 @@ Currently: Building developer tools and shipping side projects
 
 ## GitHub activity
 
-<table width="100%"><tr>
-<td width="50%"><img width="100%" height="185" src="https://github-readme-stats.vercel.app/api?username=your-gh-handle&show_icons=true&theme=tokyonight&count_private=true&include_all_commits=true&hide_border=true&custom_title=GitHub+Stats&hide=issues,contribs&hide_rank=true" /></td>
-<td width="50%"><img width="100%" height="185" src="https://github-readme-stats.vercel.app/api/top-langs/?username=your-gh-handle&layout=compact&theme=tokyonight&count_private=true&hide_border=true&custom_title=Top+Languages" /></td>
-</tr></table>
+<img width="49%" src="https://github-readme-stats.vercel.app/api?username=your-gh-handle&show_icons=true&theme=tokyonight&count_private=true&hide_border=true&custom_title=GitHub+Stats&hide=issues,contribs&show=prs_merged" />&nbsp;<img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=your-gh-handle&layout=compact&theme=tokyonight&count_private=true&hide_border=true&custom_title=Top+Languages&langs_count=6&card_width=495" />
 
 <p align="center">
 <picture>
