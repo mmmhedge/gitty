@@ -1,341 +1,736 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import '../styles/global.css';
-
-const projects = [
-  {
-    name: 'LLMPhaseTransition',
-    lang: 'Python',
-    badge: 'research',
-    desc: 'Do LLMs undergo phase transitions? Applying solid-state physics intuitions to hallucination dynamics.',
-    tags: ['physics', 'ml'],
-    url: 'https://github.com/ppo6/LLMPhaseTransition',
-  },
-  {
-    name: 'BlockRock',
-    lang: 'Solidity',
-    badge: 'ETHBrussels winner',
-    desc: 'Personalized on-chain fund management with dynamic rebalancing.',
-    tags: ['defi', 'ethereum'],
-    url: 'https://github.com/ppo6/BlockRock_ETHBrussels',
-  },
-  {
-    name: 'vouch-finance',
-    lang: 'Solidity',
-    badge: 'finalist',
-    desc: 'Undercollateralized DeFi lending via social staking and on-chain credit reputation.',
-    tags: ['defi', 'lending'],
-    url: 'https://github.com/ppo6/vouch-finance',
-  },
-  {
-    name: 'HEDGy',
-    lang: 'Python',
-    badge: 'top 10 · Optiver',
-    desc: 'Automated market-making with delta-neutral hedging on Optiver\'s Optibook.',
-    tags: ['quant', 'options'],
-    url: 'https://github.com/ppo6/HEDGy',
-  },
-  {
-    name: 'ex2.1',
-    lang: 'Python',
-    badge: 'AI Hack finalist',
-    desc: 'Decentralized compute marketplace. AI Hack London 2024.',
-    tags: ['ai', 'compute'],
-    url: 'https://github.com/ppo6/ex2.1',
-  },
-  {
-    name: 'ETHDenver-2023',
-    lang: 'Solidity',
-    badge: 'hackathon',
-    desc: 'ETHDenver 2023 submission.',
-    tags: ['ethereum'],
-    url: 'https://github.com/ppo6/ETHDenver-2023',
-  },
-];
-
-const experience = [
-  {
-    date: '2024 → 2025',
-    role: 'Quantitative Researcher',
-    company: 'Flow Traders',
-    desc: 'ML pricing engine for energy markets. 80%+ downtime reduction, 7.2% accuracy gain. Python · Kafka · ClickHouse · GCP/AWS.',
-  },
-  {
-    date: '2023 → 2024',
-    role: 'Founder in Residence',
-    company: 'Entrepreneur First',
-    desc: 'Built at intersection of ZK proofs, ML, and open banking. Shipped iOS app, 100 users.',
-  },
-  {
-    date: '2019 → 2023',
-    role: 'MSc Physics & Philosophy',
-    company: 'University of Oxford',
-    desc: 'A*A*A*A*. Machine learning, statistical analysis, advanced quantum physics.',
-  },
-  {
-    date: '2022',
-    role: 'Trading Intern',
-    company: 'Maven Securities',
-    desc: 'Options market-making on Euro Stoxx. Built auction monitoring tool now live on the trading floor. Return offer.',
-  },
-  {
-    date: '2021',
-    role: 'Female Trading Program',
-    company: 'IMC Trading',
-    desc: 'Delta-neutral hedging algorithms in Python. Top 10 in internal competition.',
-  },
-  {
-    date: '2021 → 2022',
-    role: 'Co-founder',
-    company: 'fair',
-    desc: 'ESG fintech brokerage. 50+ person team. Won UCL EFS startup competition.',
-  },
-];
 ---
+<!--
+  Liquid-metal monogram concept.
+  Shader + WebGL pipeline adapted from paper-design/liquid-logo (github.com/paper-design/liquid-logo),
+  licensed under the PolyForm Shield License 1.0.0 <https://polyformproject.org/licenses/shield/1.0.0>.
+  Required Notice: portions © paper-design (https://liquid.paper.design).
+-->
+<Layout title="Mariia Pavlenko">
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: radial-gradient(ellipse at 50% 15%, #100e18 0%, #08070c 55%, #050507 100%);
+    color: #d8d6e0;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 12px;
+    display: flex; flex-direction: column; height: 100vh;
+  }
 
-<Layout title="Mary Pavlenko">
-  <nav class="nav" id="nav">
-    <a href="/" class="nav-logo">MP</a>
-    <div class="nav-links">
-      <a href="#projects">projects</a>
-      <a href="#experience">experience</a>
-      <a href="#writing">writing</a>
-      <a href="#contact">contact</a>
+  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: clamp(24px,4vw,48px) 20px 48px; gap: 14px; }
+
+  .logo-stage {
+    width: min(380px, 70vw); height: min(380px, 70vw);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: -90px;
+  }
+  .logo-stage canvas { width: 100%; height: 100%; display: block; }
+  .logo-loading { position: absolute; font-size: 9px; color: #45434f; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .tagline { text-align: center; max-width: 520px; }
+  .tagline .surname { font-size: 11px; color: #9d97b8; letter-spacing: 0.3em; margin: 0; }
+  .tagline p { font-size: 12px; color: #6b6878; line-height: 1.7; margin-top: 14px; }
+
+  .creds { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 560px; }
+  .cred { font-size: 9.5px; color: #9d97b8; border: 1px solid #1c1c22; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em; background: #0b0b0e; }
+
+  .explore { width: 100%; max-width: 640px; margin-top: 12px; display: flex; flex-direction: column; align-items: center; }
+  .explore-toggle { display: flex; gap: 10px; margin-bottom: 22px; }
+  .explore-btn {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6b6878; background: #0b0b0e; border: 1px solid #1c1c22; border-radius: 20px;
+    padding: 7px 18px; cursor: pointer; transition: all 0.2s;
+  }
+  .explore-btn:hover { color: #d8d6e0; border-color: rgba(201,196,224,0.25); }
+  .explore-btn.active { color: #c9c4e0; border-color: rgba(201,196,224,0.5); background: rgba(201,196,224,0.06); }
+
+  .projects-grid { display: none; width: 100%; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .projects-grid.shown { display: grid; }
+  @media (max-width: 560px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+  .proj-card {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 16px 8px; border: 1px solid #1c1c22; border-radius: 10px; background: #0b0b0e;
+    text-decoration: none;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.2s, box-shadow 0.2s;
+  }
+  .proj-card.in { opacity: 1; transform: translateY(0); }
+  .proj-card.in:hover { border-color: rgba(201,196,224,0.35); transform: translateY(-2px); }
+  .proj-card.placeholder { border-style: dashed; cursor: default; }
+  .proj-card.placeholder.in { opacity: 0.45; }
+  .proj-card.placeholder.in:hover { border-color: #1c1c22; transform: translateY(0); }
+  .proj-icon canvas { width: 36px; height: 36px; display: block; }
+  .proj-name { font-size: 10px; color: #d8d6e0; letter-spacing: 0.02em; text-align: center; }
+  .proj-tag { font-size: 8px; color: #45434f; letter-spacing: 0.05em; text-align: center; }
+</style>
+
+<div class="main">
+  <div class="logo-stage">
+    <span class="logo-loading" id="loadingLabel">compiling shader…</span>
+    <canvas id="liquidCanvas"></canvas>
+  </div>
+
+  <div class="tagline">
+    <div class="surname">PAVLENKO</div>
+    <p>Oxford Physics & Philosophy '23. Ex-quant (commodities & crypto). 3x founder. Winner of 10+ international hackathons.</p>
+  </div>
+
+  <div class="creds">
+    <span class="cred">applied mech interp</span>
+    <span class="cred">A2A infra</span>
+    <span class="cred">web3//defi</span>
+    <span class="cred">fintech</span>
+    <span class="cred">quant trading</span>
+  </div>
+
+  <div class="explore">
+    <div class="explore-toggle">
+      <button class="explore-btn" id="btnProjects" type="button">Projects</button>
+      <button class="explore-btn" id="btnWriting" type="button">Writing</button>
+      <button class="explore-btn" id="btnContact" type="button">Contact</button>
     </div>
-  </nav>
-
-  <!-- Hero: text left, chart right -->
-  <section class="hero">
-    <div class="hero-inner">
-
-      <!-- Left: all the text -->
-      <div>
-        <p class="hero-label" data-anim="1">Builder & founder · London</p>
-        <h1 class="hero-name" data-anim="2">Mary<br>Pavlenko</h1>
-        <p class="hero-sub" data-anim="3">
-          Oxford Physics & Philosophy. Ex-quant (Flow Traders).
-          Building at the intersection of AI, markets, and crypto.
-        </p>
-        <div class="hero-actions" data-anim="4">
-          <a href="#projects" class="btn-primary">Projects</a>
-          <a href="/cv.pdf" target="_blank" class="btn-secondary">CV ↗</a>
-        </div>
-        <p class="hero-creds" data-anim="5">
-          <span class="hi">Oxford Physics & Phil</span> ·
-          <span class="hi">ETHBrussels winner</span> ·
-          Flow Traders · AI Hack finalist · 10+ hackathons · EF alumni
-        </p>
-      </div>
-
-      <!-- Right: animated chart — no border, no box, just lines -->
-      <div class="hero-visual">
-        <canvas id="market-canvas"></canvas>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Projects -->
-  <section class="section" id="projects">
-    <div class="section-label">Projects</div>
-    <div class="section-divider"></div>
-    <div class="projects-grid">
-      {projects.map((p) => (
-        <a class="project-card" href={p.url} target="_blank" rel="noopener">
-          <div class="project-badge">{p.badge}</div>
-          <div class="project-top">
-            <span class="project-lang">{p.lang}</span>
-            <span class="project-arrow">↗</span>
-          </div>
-          <div class="project-name">{p.name}</div>
-          <div class="project-desc">{p.desc}</div>
-          <div class="project-tags">
-            {p.tags.map((t) => <span class="tag">{t}</span>)}
-          </div>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- Experience -->
-  <section class="section" id="experience">
-    <div class="section-label">Experience</div>
-    <div class="section-divider"></div>
-    {experience.map((e) => (
-      <div class="exp-item">
-        <div class="exp-date">{e.date}</div>
-        <div>
-          <div class="exp-company">{e.company}</div>
-          <div class="exp-role">{e.role}</div>
-          <div class="exp-desc">{e.desc}</div>
-        </div>
-      </div>
-    ))}
-  </section>
-
-  <!-- Writing -->
-  <section class="section" id="writing">
-    <div class="section-label">Writing</div>
-    <div class="section-divider"></div>
-    <div class="row-list">
-      <a class="row-item" href="https://x.com/mmmhedge" target="_blank" rel="noopener">
-        <span class="row-key live">X</span>
-        <span>@mmmhedge</span>
-      </a>
-      <div class="row-item">
-        <span class="row-key">Substack</span>
-        <span>Coming soon — AI, markets, building things</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section class="section" id="contact">
-    <div class="section-label">Contact</div>
-    <div class="section-divider"></div>
-    <div class="row-list">
-      <a class="row-item" href="mailto:mariia.a.pavlenko@gmail.com">
-        <span class="row-key">Email</span>
-        <span>mariia.a.pavlenko@gmail.com</span>
-      </a>
-      <a class="row-item" href="https://github.com/ppo6" target="_blank" rel="noopener">
-        <span class="row-key">GitHub</span>
-        <span>github.com/ppo6</span>
-      </a>
-      <a class="row-item" href="https://x.com/mmmhedge" target="_blank" rel="noopener">
-        <span class="row-key">X</span>
-        <span>@mmmhedge</span>
-      </a>
-      <a class="row-item" href="/cv.pdf" target="_blank">
-        <span class="row-key">CV</span>
-        <span>Download PDF ↓</span>
-      </a>
-    </div>
-  </section>
-
-  <footer style="padding:1.25rem clamp(1.5rem,5vw,4rem);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;">
-    <span style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.06em;color:var(--muted);">Mary Pavlenko</span>
-    <div style="display:flex;gap:1.25rem;">
-      <a href="https://github.com/ppo6" target="_blank" style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">GitHub</a>
-      <a href="https://x.com/mmmhedge" target="_blank" style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--muted);transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">X</a>
-    </div>
-  </footer>
-</Layout>
+    <div class="projects-grid" id="projectsGrid"></div>
+    <div class="projects-grid" id="writingGrid"></div>
+    <div class="projects-grid" id="contactGrid"></div>
+  </div>
+</div>
 
 <script is:inline>
-  // Nav scroll
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  }, { passive: true });
+(function () {
+  // Vertex + fragment shader ported from paper-design/liquid-logo (src/hero/canvas.tsx, src/app/hero/liquid-frag.ts)
+  const vertexShaderSource = `#version 300 es
+precision mediump float;
+in vec2 a_position;
+out vec2 vUv;
+void main() {
+  vUv = .5 * (a_position + 1.);
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
 
-  // Market chart — drawn into the right-column canvas
-  // No background fill: lines float on the dark page background
-  (function () {
-    const canvas = document.getElementById('market-canvas');
-    if (!canvas) return;
+  const fragmentShaderSource = `#version 300 es
+precision mediump float;
+in vec2 vUv;
+out vec4 fragColor;
+uniform sampler2D u_image_texture;
+uniform float u_time;
+uniform float u_ratio;
+uniform float u_img_ratio;
+uniform float u_patternScale;
+uniform float u_refraction;
+uniform float u_edge;
+uniform float u_patternBlur;
+uniform float u_liquid;
+#define TWO_PI 6.28318530718
+#define PI 3.14159265358979323846
+vec3 mod289(vec3 x) { return x - floor(x * (1. / 289.)) * 289.; }
+vec2 mod289(vec2 x) { return x - floor(x * (1. / 289.)) * 289.; }
+vec3 permute(vec3 x) { return mod289(((x*34.)+1.)*x); }
+float snoise(vec2 v) {
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+    vec2 i = floor(v + dot(v, C.yy));
+    vec2 x0 = v - i + dot(i, C.xx);
+    vec2 i1;
+    i1 = (x0.x > x0.y) ? vec2(1., 0.) : vec2(0., 1.);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0., i1.y, 1.)) + i.x + vec3(0., i1.x, 1.));
+    vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.);
+    m = m*m; m = m*m;
+    vec3 x = 2. * fract(p * C.www) - 1.;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+    vec3 g;
+    g.x = a0.x * x0.x + h.x * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130. * dot(m, g);
+}
+vec2 get_img_uv() {
+    vec2 img_uv = vUv;
+    img_uv -= .5;
+    if (u_ratio > u_img_ratio) { img_uv.x = img_uv.x * u_ratio / u_img_ratio; }
+    else { img_uv.y = img_uv.y * u_img_ratio / u_ratio; }
+    img_uv += .5;
+    img_uv.y = 1. - img_uv.y;
+    return img_uv;
+}
+vec2 rotate(vec2 uv, float th) { return mat2(cos(th), sin(th), -sin(th), cos(th)) * uv; }
+float get_color_channel(float c1, float c2, float stripe_p, vec3 w, float extra_blur, float b) {
+    float ch = c2;
+    float border = 0.;
+    float blur = u_patternBlur + extra_blur;
+    ch = mix(ch, c1, smoothstep(.0, blur, stripe_p));
+    border = w[0];
+    ch = mix(ch, c2, smoothstep(border - blur, border + blur, stripe_p));
+    b = smoothstep(.2, .8, b);
+    border = w[0] + .4 * (1. - b) * w[1];
+    ch = mix(ch, c1, smoothstep(border - blur, border + blur, stripe_p));
+    border = w[0] + .5 * (1. - b) * w[1];
+    ch = mix(ch, c2, smoothstep(border - blur, border + blur, stripe_p));
+    border = w[0] + w[1];
+    ch = mix(ch, c1, smoothstep(border - blur, border + blur, stripe_p));
+    float gradient_t = (stripe_p - w[0] - w[1]) / w[2];
+    float gradient = mix(c1, c2, smoothstep(0., 1., gradient_t));
+    ch = mix(ch, gradient, smoothstep(border - blur, border + blur, stripe_p));
+    return ch;
+}
+float get_img_frame_alpha(vec2 uv, float img_frame_width) {
+    float img_frame_alpha = smoothstep(0., img_frame_width, uv.x) * smoothstep(1., 1. - img_frame_width, uv.x);
+    img_frame_alpha *= smoothstep(0., img_frame_width, uv.y) * smoothstep(1., 1. - img_frame_width, uv.y);
+    return img_frame_alpha;
+}
+void main() {
+    vec2 uv = vUv;
+    uv.y = 1. - uv.y;
+    uv.x *= u_ratio;
+    float diagonal = uv.x - uv.y;
+    float t = .001 * u_time;
+    vec2 img_uv = get_img_uv();
+    vec4 img = texture(u_image_texture, img_uv);
+    vec3 color = vec3(0.);
+    float opacity = 1.;
+    vec3 color1 = vec3(.98, 0.98, 1.);
+    vec3 color2 = vec3(.1, .1, .1 + .1 * smoothstep(.7, 1.3, uv.x + uv.y));
+    float edge = img.r;
+    vec2 grad_uv = uv;
+    grad_uv -= .5;
+    float dist = length(grad_uv + vec2(0., .2 * diagonal));
+    grad_uv = rotate(grad_uv, (.25 - .2 * diagonal) * PI);
+    float bulge = pow(1.8 * dist, 1.2);
+    bulge = 1. - bulge;
+    bulge *= pow(uv.y, .3);
+    float cycle_width = u_patternScale;
+    float thin_strip_1_ratio = .12 / cycle_width * (1. - .4 * bulge);
+    float thin_strip_2_ratio = .07 / cycle_width * (1. + .4 * bulge);
+    float wide_strip_ratio = (1. - thin_strip_1_ratio - thin_strip_2_ratio);
+    float thin_strip_1_width = cycle_width * thin_strip_1_ratio;
+    float thin_strip_2_width = cycle_width * thin_strip_2_ratio;
+    opacity = 1. - smoothstep(.9 - .5 * u_edge, 1. - .5 * u_edge, edge);
+    opacity *= get_img_frame_alpha(img_uv, 0.01);
+    float noise = snoise(uv - t);
+    edge += (1. - edge) * u_liquid * noise;
+    float refr = 0.;
+    refr += (1. - bulge);
+    refr = clamp(refr, 0., 1.);
+    float dir = grad_uv.x;
+    dir += diagonal;
+    dir -= 2. * noise * diagonal * (smoothstep(0., 1., edge) * smoothstep(1., 0., edge));
+    bulge *= clamp(pow(uv.y, .1), .3, 1.);
+    dir *= (.1 + (1.1 - edge) * bulge);
+    dir *= smoothstep(1., .7, edge);
+    dir += .18 * (smoothstep(.1, .2, uv.y) * smoothstep(.4, .2, uv.y));
+    dir += .03 * (smoothstep(.1, .2, 1. - uv.y) * smoothstep(.4, .2, 1. - uv.y));
+    dir *= (.5 + .5 * pow(uv.y, 2.));
+    dir *= cycle_width;
+    dir -= t;
+    float refr_r = refr;
+    refr_r += .03 * bulge * noise;
+    float refr_b = 1.3 * refr;
+    refr_r += 5. * (smoothstep(-.1, .2, uv.y) * smoothstep(.5, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(1., .4, bulge));
+    refr_r -= diagonal;
+    refr_b += (smoothstep(0., .4, uv.y) * smoothstep(.8, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(.8, .4, bulge));
+    refr_b -= .2 * edge;
+    refr_r *= u_refraction;
+    refr_b *= u_refraction;
+    vec3 w = vec3(thin_strip_1_width, thin_strip_2_width, wide_strip_ratio);
+    w[1] -= .02 * smoothstep(.0, 1., edge + bulge);
+    float stripe_r = mod(dir + refr_r, 1.);
+    float r = get_color_channel(color1.r, color2.r, stripe_r, w, 0.02 + .03 * u_refraction * bulge, bulge);
+    float stripe_g = mod(dir, 1.);
+    float g = get_color_channel(color1.g, color2.g, stripe_g, w, 0.01 / (1. - diagonal), bulge);
+    float stripe_b = mod(dir - refr_b, 1.);
+    float b = get_color_channel(color1.b, color2.b, stripe_b, w, .01, bulge);
+    color = vec3(r, g, b);
+    color *= opacity;
+    fragColor = vec4(color, opacity);
+}`;
+
+  // Build a soft distance-style mask from the "MARY" wordmark, same idea as
+  // paper-design/liquid-logo's parseLogoImage(): white at the silhouette edge,
+  // dark toward the interior, solved with a small Poisson relaxation.
+  function buildMonogramMask(size) {
+    const shapeCanvas = document.createElement('canvas');
+    shapeCanvas.width = size; shapeCanvas.height = size;
+    const sctx = shapeCanvas.getContext('2d');
+    sctx.fillStyle = '#fff';
+    sctx.fillRect(0, 0, size, size);
+    sctx.fillStyle = '#000';
+    sctx.textAlign = 'center';
+    sctx.textBaseline = 'middle';
+    const WORDMARK = 'MARY';
+    const targetWidth = size * 0.84;
+    const probeSize = Math.round(size * 0.3);
+    sctx.font = `700 ${probeSize}px "Helvetica Neue", Arial, sans-serif`;
+    const measuredWidth = sctx.measureText(WORDMARK).width;
+    const fitSize = Math.round(probeSize * (targetWidth / measuredWidth));
+    sctx.font = `700 ${fitSize}px "Helvetica Neue", Arial, sans-serif`;
+    sctx.fillText(WORDMARK, size / 2, size / 2 + size * 0.02);
+
+    const { data } = sctx.getImageData(0, 0, size, size);
+    const shapeMask = new Uint8Array(size * size);
+    for (let p = 0; p < size * size; p++) {
+      const r = data[p * 4];
+      shapeMask[p] = r < 128 ? 1 : 0;
+    }
+
+    function inside(x, y) {
+      if (x < 0 || x >= size || y < 0 || y >= size) return false;
+      return shapeMask[y * size + x] === 1;
+    }
+
+    const boundaryMask = new Uint8Array(size * size);
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const idx = y * size + x;
+        if (!shapeMask[idx]) continue;
+        let isBoundary = false;
+        for (let ny = y - 1; ny <= y + 1 && !isBoundary; ny++) {
+          for (let nx = x - 1; nx <= x + 1 && !isBoundary; nx++) {
+            if (!inside(nx, ny)) isBoundary = true;
+          }
+        }
+        if (isBoundary) boundaryMask[idx] = 1;
+      }
+    }
+
+    let u = new Float32Array(size * size);
+    let newU = new Float32Array(size * size);
+    const C = 0.01;
+    const ITERATIONS = 120;
+    function getU(x, y, arr) {
+      if (x < 0 || x >= size || y < 0 || y >= size) return 0;
+      if (!shapeMask[y * size + x]) return 0;
+      return arr[y * size + x];
+    }
+    for (let iter = 0; iter < ITERATIONS; iter++) {
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const idx = y * size + x;
+          if (!shapeMask[idx] || boundaryMask[idx]) { newU[idx] = 0; continue; }
+          const sumN = getU(x + 1, y, u) + getU(x - 1, y, u) + getU(x, y + 1, u) + getU(x, y - 1, u);
+          newU[idx] = (C + sumN) / 4;
+        }
+      }
+      const tmp = u; u = newU; newU = tmp;
+    }
+
+    let maxVal = 0;
+    for (let i = 0; i < size * size; i++) if (u[i] > maxVal) maxVal = u[i];
+
+    const out = new ImageData(size, size);
+    const alpha = 2.0;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const idx = y * size + x;
+        const px = idx * 4;
+        if (!shapeMask[idx]) {
+          out.data[px] = 255; out.data[px + 1] = 255; out.data[px + 2] = 255; out.data[px + 3] = 255;
+        } else {
+          const raw = maxVal > 0 ? u[idx] / maxVal : 0;
+          const remapped = Math.pow(raw, alpha);
+          const gray = 255 * (1 - remapped);
+          out.data[px] = gray; out.data[px + 1] = gray; out.data[px + 2] = gray; out.data[px + 3] = 255;
+        }
+      }
+    }
+    return out;
+  }
+
+  const params = {
+    patternScale: 2,
+    refraction: 0.015,
+    edge: 0.4,
+    patternBlur: 0.005,
+    liquid: 0.07,
+    speed: 0.3,
+  };
+
+  function setupLiquidShader() {
+  const canvas = document.getElementById('liquidCanvas');
+  const loadingLabel = document.getElementById('loadingLabel');
+  const gl = canvas.getContext('webgl2', { antialias: true, alpha: true });
+  if (!gl) { loadingLabel.textContent = 'WebGL2 unsupported in this browser'; return; }
+
+  function createShader(source, type) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(shader));
+      return null;
+    }
+    return shader;
+  }
+
+  const vs = createShader(vertexShaderSource, gl.VERTEX_SHADER);
+  const fs = createShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(program));
+    loadingLabel.textContent = 'shader link failed';
+    return;
+  }
+  gl.useProgram(program);
+
+  const uniforms = {};
+  const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < uniformCount; i++) {
+    const name = gl.getActiveUniform(program, i).name;
+    uniforms[name] = gl.getUniformLocation(program, name);
+  }
+
+  const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+  const vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+  const positionLocation = gl.getAttribLocation(program, 'a_position');
+  gl.enableVertexAttribArray(positionLocation);
+  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+  gl.uniform1f(uniforms.u_edge, params.edge);
+  gl.uniform1f(uniforms.u_patternBlur, params.patternBlur);
+  gl.uniform1f(uniforms.u_patternScale, params.patternScale);
+  gl.uniform1f(uniforms.u_refraction, params.refraction);
+  gl.uniform1f(uniforms.u_liquid, params.liquid);
+  gl.uniform1f(uniforms.u_ratio, 1);
+  gl.uniform1f(uniforms.u_img_ratio, 1);
+
+  const maskSize = 300;
+  const maskData = buildMonogramMask(maskSize);
+  const texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maskSize, maskSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, maskData.data);
+  gl.uniform1i(uniforms.u_image_texture, 0);
+
+  loadingLabel.style.display = 'none';
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const side = canvas.clientWidth;
+    canvas.width = side * dpr;
+    canvas.height = side * dpr;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let totalTime = 0, lastTime = performance.now();
+  let rafId = null;
+
+  function render(now) {
+    const dt = now - lastTime;
+    lastTime = now;
+    totalTime += dt * params.speed;
+    gl.uniform1f(uniforms.u_time, totalTime);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    rafId = requestAnimationFrame(render);
+  }
+
+  const obs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!rafId) { lastTime = performance.now(); rafId = requestAnimationFrame(render); } }
+    else if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  });
+  obs.observe(canvas);
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    rafId = requestAnimationFrame(render);
+  }
+  }
+  setupLiquidShader();
+
+  // ---- Minimal project grid: each card gets a small hand-drawn icon that
+  // actually represents what the project is, not a random glyph. ----
+  const PROJECTS = [
+    { name: 'LLMPhaseTransition', tag: 'research · python', url: 'https://github.com/ppo6/LLMPhaseTransition', icon: 'phase' },
+    { name: 'BlockRock', tag: 'ETHBrussels 🥇 · solidity', url: 'https://github.com/ppo6/BlockRock_ETHBrussels', icon: 'blocks' },
+    { name: 'HEDGy', tag: 'top 10 · optiver', url: 'https://github.com/ppo6/HEDGy', icon: 'candles' },
+    { name: 'vouch-finance', tag: 'finalist · solidity', url: 'https://github.com/ppo6/vouch-finance', icon: 'shield' },
+    { name: 'ex2.1', tag: 'AI Hack finalist', url: 'https://github.com/ppo6/ex2.1', icon: 'network' },
+    { name: '+ Add project', tag: '', url: null, placeholder: true, icon: 'plus' },
+  ];
+
+  const STROKE = 'rgba(201,196,224,0.9)';
+  const STROKE_DIM = 'rgba(157,151,184,0.5)';
+
+  const ICONS = {
+    // Ordered grid on the left vs. a jittered scatter on the right — a phase boundary in the middle.
+    phase(ctx) {
+      const ordered = [[-3, -3], [3, -3], [-3, 3], [3, 3]];
+      ctx.fillStyle = STROKE;
+      for (const [dx, dy] of ordered) {
+        ctx.beginPath();
+        ctx.arc(12 + dx, 18 + dy, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const scattered = [[-4, -5], [3, -2], [-2, 4], [5, 3]];
+      ctx.fillStyle = STROKE_DIM;
+      for (const [dx, dy] of scattered) {
+        ctx.beginPath();
+        ctx.arc(24 + dx, 18 + dy, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([1.5, 2]);
+      ctx.beginPath();
+      ctx.moveTo(18, 6); ctx.lineTo(18, 30);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    },
+    // Three linked blocks — a chain.
+    blocks(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.4;
+      const xs = [10, 18, 26];
+      for (const x of xs) ctx.strokeRect(x - 3.5, 14.5, 7, 7);
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.beginPath();
+      ctx.moveTo(13.5, 18); ctx.lineTo(14.5, 18);
+      ctx.moveTo(21.5, 18); ctx.lineTo(22.5, 18);
+      ctx.stroke();
+    },
+    // A trend line over a small row of candlesticks — market-making.
+    candles(ctx) {
+      const bars = [[9, 20, 27], [17, 17, 24], [25, 21, 28]];
+      for (const [x, top, bottom] of bars) {
+        ctx.strokeStyle = STROKE_DIM;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x + 2, top - 2); ctx.lineTo(x + 2, bottom + 2); ctx.stroke();
+        ctx.fillStyle = STROKE_DIM;
+        ctx.fillRect(x, top, 4, bottom - top);
+      }
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(8, 14); ctx.lineTo(15, 10); ctx.lineTo(20, 13); ctx.lineTo(28, 7);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(28, 7, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = STROKE;
+      ctx.fill();
+    },
+    // A shield with a checkmark — credit / lending trust.
+    shield(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(18, 7);
+      ctx.lineTo(26, 10.5);
+      ctx.lineTo(26, 18);
+      ctx.quadraticCurveTo(26, 25, 18, 29);
+      ctx.quadraticCurveTo(10, 25, 10, 18);
+      ctx.lineTo(10, 10.5);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(14.5, 18); ctx.lineTo(17, 21); ctx.lineTo(22, 14.5);
+      ctx.stroke();
+    },
+    // Five connected nodes — a distributed compute network.
+    network(ctx) {
+      const nodes = [[18, 18], [10, 10], [26, 10], [10, 26], [26, 26]];
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1;
+      for (let i = 1; i < nodes.length; i++) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[0][0], nodes[0][1]);
+        ctx.lineTo(nodes[i][0], nodes[i][1]);
+        ctx.stroke();
+      }
+      ctx.fillStyle = STROKE;
+      for (const [x, y] of nodes) {
+        ctx.beginPath();
+        ctx.arc(x, y, x === 18 && y === 18 ? 2.4 : 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+    // A dashed plus — open slot for a project not yet listed.
+    plus(ctx) {
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.arc(18, 18, 11, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(13, 18); ctx.lineTo(23, 18);
+      ctx.moveTo(18, 13); ctx.lineTo(18, 23);
+      ctx.stroke();
+    },
+    // A small page with text lines — notes / long-form writing.
+    lines(ctx) {
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(11, 7, 14, 22);
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1;
+      for (const [y, x2] of [[13, 22], [17, 22], [21, 22], [25, 19]]) {
+        ctx.beginPath();
+        ctx.moveTo(14, y);
+        ctx.lineTo(x2, y);
+        ctx.stroke();
+      }
+    },
+    // Two quotation marks — essays / opinion pieces.
+    quote(ctx) {
+      ctx.fillStyle = STROKE;
+      for (const x of [13, 22]) {
+        ctx.beginPath();
+        ctx.arc(x, 14, 3, Math.PI, Math.PI * 1.85, false);
+        ctx.lineTo(x - 1, 22);
+        ctx.closePath();
+        ctx.fill();
+      }
+    },
+    // A sparkle — short-form notes / ideas.
+    spark(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(18, 7); ctx.lineTo(18, 29);
+      ctx.moveTo(7, 18); ctx.lineTo(29, 18);
+      ctx.stroke();
+      ctx.strokeStyle = STROKE_DIM;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(11, 11); ctx.lineTo(25, 25);
+      ctx.moveTo(25, 11); ctx.lineTo(11, 25);
+      ctx.stroke();
+    },
+    // An envelope — email.
+    mail(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.3;
+      ctx.strokeRect(8, 11, 20, 14);
+      ctx.beginPath();
+      ctx.moveTo(8, 11.5); ctx.lineTo(18, 20); ctx.lineTo(28, 11.5);
+      ctx.stroke();
+    },
+    // Nested brackets — code / GitHub.
+    code(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(15, 11); ctx.lineTo(9, 18); ctx.lineTo(15, 25);
+      ctx.moveTo(21, 11); ctx.lineTo(27, 18); ctx.lineTo(21, 25);
+      ctx.stroke();
+    },
+    // A cross mark — X / social.
+    xmark(ctx) {
+      ctx.strokeStyle = STROKE;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(11, 11); ctx.lineTo(25, 25);
+      ctx.moveTo(25, 11); ctx.lineTo(11, 25);
+      ctx.stroke();
+    },
+  };
+
+  function drawProjectIcon(canvas, iconName) {
+    const dpr = window.devicePixelRatio || 1;
+    const size = 36;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
     const ctx = canvas.getContext('2d');
-    const N = 6000;
-    const PX = 2.5;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    (ICONS[iconName] || ICONS.plus)(ctx);
+  }
 
-    function randn() {
-      return (Math.random() + Math.random() + Math.random() + Math.random() - 2) / 1.2;
-    }
+  // ---- Writing: same card language, blank links until real posts exist. ----
+  const WRITING = [
+    { name: 'Phase Transitions in LLMs', tag: 'essay · draft', url: '#', icon: 'spark' },
+    { name: 'Market Making as Physics', tag: 'notes', url: '#', icon: 'lines' },
+    { name: 'On Building in Public', tag: 'essay', url: '#', icon: 'quote' },
+    { name: '+ Add post', tag: '', url: null, placeholder: true, icon: 'plus' },
+  ];
 
-    function genPath(drift, vol, start) {
-      const p = new Float32Array(N);
-      p[0] = start;
-      for (let i = 1; i < N; i++) {
-        p[i] = Math.max(0.05, Math.min(0.95, p[i - 1] + drift + vol * randn()));
+  // ---- Contact: same card language instead of a persistent footer bar. ----
+  const CONTACT = [
+    { name: 'Email', tag: 'mmmhedge@gmail.com', url: 'mailto:mmmhedge@gmail.com', icon: 'mail' },
+    { name: 'GitHub', tag: 'github.com/ppo6', url: 'https://github.com/ppo6', icon: 'code' },
+    { name: 'X', tag: '@mmmhedge', url: 'https://x.com/mmmhedge', icon: 'xmark' },
+  ];
+
+  function renderGrid(gridEl, items) {
+    items.forEach((item, i) => {
+      const el = document.createElement(item.placeholder ? 'div' : 'a');
+      el.className = 'proj-card' + (item.placeholder ? ' placeholder' : '');
+      el.style.transitionDelay = `${i * 55}ms`;
+      if (!item.placeholder) {
+        el.href = item.url;
+        if (item.url.startsWith('http')) { el.target = '_blank'; el.rel = 'noopener'; }
+        else if (item.url === '#') { el.addEventListener('click', (e) => e.preventDefault()); }
       }
-      return p;
-    }
-
-    // Different starting positions so lines spread across the column height
-    const series = [
-      { p: genPath( 0.00010, 0.006, 0.30), color: 'rgba(34,211,238,0.7)',   lw: 1.5 },
-      { p: genPath(-0.00008, 0.008, 0.55), color: 'rgba(34,211,238,0.3)',   lw: 1   },
-      { p: genPath( 0.00005, 0.005, 0.72), color: 'rgba(148,163,184,0.25)', lw: 1   },
-      { p: genPath(-0.00012, 0.007, 0.18), color: 'rgba(34,211,238,0.15)',  lw: 0.8 },
-    ];
-
-    let offset = 0;
-    let rafId  = null;
-
-    function resize() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width  = canvas.offsetWidth  * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      ctx.scale(dpr, dpr);
-    }
-
-    function draw() {
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
-      ctx.clearRect(0, 0, w, h);
-
-      // Subtle grid — feels like a chart without overpowering
-      ctx.strokeStyle = 'rgba(30,41,59,0.4)';
-      ctx.lineWidth   = 0.5;
-      for (let i = 1; i < 10; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, i * h / 10);
-        ctx.lineTo(w, i * h / 10);
-        ctx.stroke();
-      }
-      for (let i = 1; i < 6; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * w / 6, 0);
-        ctx.lineTo(i * w / 6, h);
-        ctx.stroke();
-      }
-
-      // Price lines
-      const startIdx = Math.floor(offset / PX);
-      const xOff     = offset % PX;
-      const count    = Math.ceil(w / PX) + 2;
-
-      series.forEach(({ p, color, lw }, si) => {
-        ctx.strokeStyle = color;
-        ctx.lineWidth   = lw;
-        ctx.lineJoin    = 'round';
-        ctx.beginPath();
-        let moved = false;
-        for (let i = 0; i < count; i++) {
-          const x = i * PX - xOff;
-          const y = p[(startIdx + i) % N] * h;
-          if (!moved) { ctx.moveTo(x, y); moved = true; }
-          else          ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-
-        // Live dot on primary line
-        if (si === 0) {
-          const lx = (count - 2) * PX - xOff;
-          const ly = p[(startIdx + count - 2) % N] * h;
-          ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(34,211,238,1)'; ctx.fill();
-          ctx.beginPath(); ctx.arc(lx, ly, 7, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(34,211,238,0.12)'; ctx.fill();
-        }
-      });
-
-      offset = (offset + 0.4) % (N * PX);
-      rafId  = requestAnimationFrame(draw);
-    }
-
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { if (!rafId) { resize(); draw(); } }
-      else { cancelAnimationFrame(rafId); rafId = null; }
+      const icon = document.createElement('div');
+      icon.className = 'proj-icon';
+      const cnv = document.createElement('canvas');
+      icon.appendChild(cnv);
+      const name = document.createElement('div');
+      name.className = 'proj-name';
+      name.textContent = item.name;
+      const tag = document.createElement('div');
+      tag.className = 'proj-tag';
+      tag.textContent = item.tag;
+      el.append(icon, name, tag);
+      gridEl.appendChild(el);
+      drawProjectIcon(cnv, item.icon);
     });
-    obs.observe(canvas);
+  }
 
-    window.addEventListener('resize', () => {
-      cancelAnimationFrame(rafId); rafId = null; resize(); draw();
-    }, { passive: true });
+  const SECTIONS = {
+    projects: { grid: document.getElementById('projectsGrid'), btn: document.getElementById('btnProjects'), items: PROJECTS },
+    writing: { grid: document.getElementById('writingGrid'), btn: document.getElementById('btnWriting'), items: WRITING },
+    contact: { grid: document.getElementById('contactGrid'), btn: document.getElementById('btnContact'), items: CONTACT },
+  };
 
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      resize(); draw();
+  for (const key in SECTIONS) renderGrid(SECTIONS[key].grid, SECTIONS[key].items);
+
+  let activeKey = null;
+
+  function showSection(which) {
+    if (which === activeKey) return;
+
+    if (activeKey) {
+      const prev = SECTIONS[activeKey];
+      prev.grid.querySelectorAll('.proj-card.in').forEach(c => c.classList.remove('in'));
+      const prevGrid = prev.grid;
+      setTimeout(() => { if (SECTIONS[activeKey]?.grid !== prevGrid) prevGrid.classList.remove('shown'); }, 350);
     }
-  })();
+
+    const target = SECTIONS[which];
+    target.grid.classList.add('shown');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        target.grid.querySelectorAll('.proj-card').forEach(c => c.classList.add('in'));
+      });
+    });
+
+    activeKey = which;
+    for (const key in SECTIONS) SECTIONS[key].btn.classList.toggle('active', key === which);
+  }
+
+  for (const key in SECTIONS) SECTIONS[key].btn.addEventListener('click', () => showSection(key));
+})();
 </script>
+</Layout>
