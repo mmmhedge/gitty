@@ -1,7 +1,9 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CONTACT, ICONS, PROJECTS, WRITING, type SectionItem } from './explore-data';
+import { CONTACT, ICONS, WORK, WRITING, type SectionItem } from './explore-data';
 
-const SECTIONS: Record<string, SectionItem[]> = { PROJECTS, WRITING, CONTACT };
+const SECTIONS: Record<string, SectionItem[]> = { WORK, WRITING, CONTACT };
 
 describe('explore-data sections', () => {
   for (const [sectionName, items] of Object.entries(SECTIONS)) {
@@ -40,9 +42,32 @@ describe('explore-data sections', () => {
     expect(x?.url).toMatch(/^https:\/\/x\.com\//);
   });
 
-  it('PROJECTS github links all point to the same account', () => {
-    for (const item of PROJECTS.filter((p) => !p.placeholder)) {
-      expect(item.url).toMatch(/^https:\/\/github\.com\/ppo6\//);
+  it('every WORK item unwraps into real context, and any links are https', () => {
+    for (const item of WORK.filter((w) => !w.placeholder)) {
+      expect(item.detail, `"${item.name}" is missing detail text`).toBeTruthy();
+      for (const l of item.links ?? []) {
+        expect(l.url, `"${item.name}" link "${l.label}" is not https`).toMatch(/^https:\/\//);
+      }
+    }
+  });
+
+  it('WORK images exist on disk under public/', () => {
+    for (const item of WORK) {
+      if (!item.img) continue;
+      expect(item.img.src, `"${item.name}" img src should be a /img/... path`).toMatch(/^\/img\//);
+      expect(item.img.alt, `"${item.name}" img is missing alt text`).toBeTruthy();
+      const onDisk = join(__dirname, '../../public', item.img.src);
+      expect(existsSync(onDisk), `"${item.name}" img file missing: ${onDisk}`).toBe(true);
+    }
+  });
+
+  it('WORK github links all point to the same account', () => {
+    for (const item of WORK) {
+      for (const l of item.links ?? []) {
+        if (l.url.includes('github.com')) {
+          expect(l.url).toMatch(/^https:\/\/github\.com\/ppo6\//);
+        }
+      }
     }
   });
 

@@ -1,532 +1,551 @@
 ---
 import Layout from '../layouts/Layout.astro';
 ---
-<!--
-  Liquid-metal monogram concept.
-  Shader + WebGL pipeline adapted from paper-design/liquid-logo (github.com/paper-design/liquid-logo),
-  licensed under the PolyForm Shield License 1.0.0 <https://polyformproject.org/licenses/shield/1.0.0>.
-  Required Notice: portions © paper-design (https://liquid.paper.design).
--->
 <Layout title="Mary">
 <style is:global>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  html { scroll-behavior: smooth; }
   body {
-    background: radial-gradient(ellipse at 50% 15%, #100e18 0%, #08070c 55%, #050507 100%);
-    color: #d8d6e0;
-    font-family: 'Space Mono', 'Courier New', monospace;
-    font-size: 12px;
-    display: flex; flex-direction: column; height: 100vh;
+    background: #050507;
+    color: #b2adc9;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: clamp(24px,4vw,48px) 20px 48px; gap: 14px; }
+  /* Super-minimal single centered column — lxm.house homage, dark/muted. */
+  .wrap { max-width: 1040px; margin: 0 auto; padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px) 96px; }
+  /* Keep prose comfortable even as the column widens for the photos. */
+  .lead, .muted, p.muted { max-width: 620px; }
 
-  .logo-stage {
-    width: min(380px, 70vw); height: min(380px, 70vw);
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: -90px;
+  /* Staggered fade-in on load — opacity only, nothing slides or reflows. */
+  .reveal { opacity: 0; transition: opacity 0.7s ease; }
+  .reveal.in { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transition: none; } }
+
+  /* Flickering glyphs while the mono section labels decode into place. */
+  .dud { color: #676472; opacity: 0.85; }
+
+  /* Entries fade in as they scroll into view. */
+  .entry { opacity: 0; transition: opacity 0.5s ease; }
+  .entry.in { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .entry { opacity: 1; transition: none; } }
+
+  /* Cursor spotlight: glyphs within ~100px of the pointer tint tokyonight
+     green, falling off radially — painted on the text itself, nothing else. */
+  .spotlit {
+    color: transparent !important;
+    background-image: radial-gradient(circle at var(--mx, -999px) var(--my, -999px),
+      #a9f56a 0, #a9f56a 24px, var(--base, #b2adc9) 100px);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
-  .logo-stage canvas { width: 100%; height: 100%; display: block; }
-  .logo-loading { position: absolute; font-size: 9px; color: #45434f; letter-spacing: 0.12em; text-transform: uppercase; }
 
-  .tagline { text-align: center; max-width: 520px; }
-  .tagline .surname { font-size: 11px; color: #9d97b8; letter-spacing: 0.3em; margin: 0; }
-  .tagline p { font-size: 12px; color: #6b6878; line-height: 1.7; margin-top: 14px; }
+  /* Quiet craft details. */
+  ::selection { background: rgba(201, 196, 224, 0.22); color: #e7e4ef; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #1c1c22; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #26252e; }
+  ::-webkit-scrollbar-track { background: transparent; }
 
-  .creds { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 560px; }
-  .cred { font-size: 9.5px; color: #9d97b8; border: 1px solid #1c1c22; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.03em; background: #0b0b0e; }
+  /* Name row: a small square portrait sits left of the name. Softened B&W so
+     the brows read lighter; colour on hover, like every photo on the page. */
+  .name-row { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 18px; flex-wrap: wrap; }
 
-  .explore { width: 100%; max-width: 640px; margin-top: 12px; display: flex; flex-direction: column; align-items: center; }
-  .explore-toggle { display: flex; gap: 10px; margin-bottom: 22px; }
-  .explore-btn {
-    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: #6b6878; background: #0b0b0e; border: 1px solid #1c1c22; border-radius: 20px;
-    padding: 7px 18px; cursor: pointer; transition: all 0.2s;
+  /* Hidden reading note (R3): an invisible block top-right of the hero that
+     reveals in green under the cursor. Focusable for keyboards; always shown
+     on touch devices, which have no hover to discover it with. */
+  .read-note {
+    margin-left: auto; align-self: center; text-align: right; max-width: 250px;
+    text-decoration: none; border-bottom: 0;
   }
-  .explore-btn:hover { color: #d8d6e0; border-color: rgba(201,196,224,0.25); }
-  .explore-btn.active { color: #c9c4e0; border-color: rgba(201,196,224,0.5); background: rgba(201,196,224,0.06); }
-
-  .projects-grid { display: none; width: 100%; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .projects-grid.shown { display: grid; }
-  @media (max-width: 560px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
-  .proj-card {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    padding: 16px 8px; border: 1px solid #1c1c22; border-radius: 10px; background: #0b0b0e;
-    text-decoration: none;
-    opacity: 0; transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.2s, box-shadow 0.2s;
+  .read-note:hover, .read-note:focus-visible { border-bottom: 0; }
+  /* Glyphs rest transparent: revealed in full on hover/focus, or partially by
+     whichever light source (cursor or comet) sweeps its sphere across them. */
+  .rn-k { display: block; font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: transparent; margin-bottom: 5px; transition: color 0.3s ease; }
+  .rn-t { display: block; font-size: 11px; line-height: 1.55; color: transparent; transition: color 0.3s ease; }
+  .read-note:hover .rn-k, .read-note:focus-visible .rn-k { color: rgba(169, 245, 106, 0.5); }
+  .read-note:hover .rn-t, .read-note:focus-visible .rn-t { color: #a9f56a; }
+  @media (hover: none) {
+    .rn-k { color: rgba(169, 245, 106, 0.5); }
+    .rn-t { color: #a9f56a; }
   }
-  .proj-card.in { opacity: 1; transform: translateY(0); }
-  .proj-card.in:hover { border-color: rgba(201,196,224,0.35); transform: translateY(-2px); }
-  .proj-card.placeholder { border-style: dashed; cursor: default; }
-  .proj-card.placeholder.in { opacity: 0.45; }
-  .proj-card.placeholder.in:hover { border-color: #1c1c22; transform: translateY(0); }
-  .proj-icon canvas { width: 36px; height: 36px; display: block; }
-  .proj-name { font-size: 10px; color: #d8d6e0; letter-spacing: 0.02em; text-align: center; }
-  .proj-tag { font-size: 8px; color: #45434f; letter-spacing: 0.05em; text-align: center; }
+
+  /* The shooting star: a small green streak, spawned by JS on a line that
+     passes through the reading note. */
+  .shooting-star {
+    position: fixed; left: 0; top: 0; width: 96px; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(169, 245, 106, 0.06) 45%, #d9ffb4 100%);
+    /* Negative z-index: the streak travels BEHIND text and images, showing
+       only in the open space between them. */
+    border-radius: 1px; pointer-events: none; z-index: -1;
+    filter: drop-shadow(0 0 4px rgba(169, 245, 106, 0.65));
+  }
+  /* Two-line lockup: "Mary" over "P" (the &#10; renders via pre-line). Two
+     32px lines match the 64px avatar; the negative margin plants the bottom
+     line's baseline on the image's bottom edge. */
+  .name-row h1 { white-space: pre-line; line-height: 32px; margin-bottom: -6px; }
+  .portrait { margin: 0; width: 64px; flex-shrink: 0; }
+  .portrait img {
+    display: block; width: 64px; height: 64px; object-fit: cover;
+    border: 1px solid #23222b; border-radius: 2px;
+    filter: grayscale(1) contrast(0.92) brightness(1.04); transition: filter 0.55s ease;
+  }
+  .portrait:hover img { filter: grayscale(0) contrast(1) brightness(1); }
+  .reveal.in .portrait img { animation: developSoft 0.9s ease backwards 0.1s; }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px; font-weight: 700; color: #e7e4ef; letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+
+  p { margin-bottom: 16px; }
+  .lead { color: #cbc6df; }
+  .muted { color: #6b6878; }
+
+  a { color: #c9c4e0; text-decoration: none; border-bottom: 1px solid rgba(201,196,224,0.28); transition: border-color 0.2s, color 0.2s; }
+  a:hover { color: #e7e4ef; border-bottom-color: rgba(201,196,224,0.7); }
+
+  /* Bordered interests box — echoes the reference's question card. */
+  .box {
+    border: 1px solid #1c1c22; border-radius: 2px; background: rgba(11,11,14,0.6);
+    padding: 16px 18px; margin: 26px 0; color: #9f9bb4; font-size: 12px; line-height: 1.9;
+  }
+  .box .sep { color: #676472; padding: 0 6px; }
+
+  /* Photos: the three event shots in one aligned row, captions beneath. On load
+     each one "develops" like a print — blur and darkness lifting, staggered —
+     then holds B&W until hovered, when colour returns. */
+  .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 42px 0 14px; max-width: 780px; }
+  @media (max-width: 620px) { .photos { grid-template-columns: 1fr; max-width: 340px; } }
+  .photos figure { margin: 0; }
+  .photos img {
+    display: block; width: 100%; aspect-ratio: 3 / 2; height: auto; object-fit: cover;
+    border: 1px solid #23222b; border-radius: 2px;
+    filter: grayscale(1) contrast(1.03) brightness(0.86); transition: filter 0.55s ease;
+  }
+  .photos:not(.in) img { opacity: 0; }
+  .photos.in img { animation: develop 0.9s ease backwards 0.1s; }
+  .photos figure:hover img { filter: grayscale(0) contrast(1) brightness(1); }
+  .photos figcaption {
+    font-size: 9px; color: #7e7b8c; letter-spacing: 0.03em; line-height: 1.55; margin-top: 8px;
+    opacity: 0; transition: opacity 0.6s ease 0.7s;
+  }
+  .photos.in figcaption { opacity: 1; }
+  @keyframes develop {
+    from { opacity: 0; filter: grayscale(1) contrast(1.03) brightness(0.45) blur(10px); }
+    to { opacity: 1; filter: grayscale(1) contrast(1.03) brightness(0.86) blur(0); }
+  }
+  @keyframes developSoft {
+    from { opacity: 0; filter: grayscale(1) contrast(0.92) brightness(0.5) blur(10px); }
+    to { opacity: 1; filter: grayscale(1) contrast(0.92) brightness(1.04) blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photos img, .photos:not(.in) img, .photos figcaption { opacity: 1 !important; animation: none !important; transition: none; }
+    .reveal.in .portrait img { animation: none; }
+  }
+
+  /* Section heading: mono label + a muted count pulled from the data. */
+  h2 {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em;
+    color: #6b6878; margin: 52px 0 6px;
+  }
+  h2:first-of-type { margin-top: 44px; }
+  .h2-count { font-weight: 400; color: #5a5867; margin-left: 10px; letter-spacing: 0.08em; }
+
+  /* Terse one-line entries; detail unfolds on click. */
+  .entry { padding: 9px 0; }
+  .entry-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; cursor: pointer; }
+  .entry-head.static { cursor: default; }
+  .entry-num { font-size: 9px; color: rgba(169, 245, 106, 0.65); letter-spacing: 0.08em; min-width: 18px; transition: color 0.2s; }
+  .entry-head:hover .entry-num { color: #a9f56a; }
+  .entry-head:not(.static)::after { content: '+'; color: rgba(169, 245, 106, 0.65); font-size: 12px; margin-left: auto; transition: color 0.2s; }
+  .entry-head:not(.static):hover::after { color: #a9f56a; }
+  .entry-head[aria-expanded="true"]::after { content: '−'; color: #a9f56a; }
+  .entry-name { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 15px; color: #cbc7dc; border-bottom-color: rgba(201,196,224,0.28); }
+  .entry-head:hover .entry-name { color: #e7e4ef; border-bottom-color: rgba(201,196,224,0.6); }
+  .entry-tag { font-size: 10.5px; color: #7e7b8c; letter-spacing: 0.03em; }
+  .entry-fold { display: none; margin: 8px 0 4px; padding-left: 1px; }
+  .entry-fold.open { display: block; }
+  .entry-detail { font-size: 11.5px; color: #9f9bb4; line-height: 1.75; margin: 0; white-space: pre-line; }
+  .entry-links { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .entry-links a { font-size: 10px; letter-spacing: 0.04em; }
+
+  /* Contact row — terse inline list. */
+  .contact { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px; }
+  .contact a { font-size: 12px; }
+  .contact .c-tag { color: #676472; font-size: 10px; display: block; border: 0; }
+
 </style>
 
-<div class="main">
-  <div class="logo-stage">
-    <span class="logo-loading" id="loadingLabel">compiling shader…</span>
-    <canvas id="liquidCanvas"></canvas>
-  </div>
 
-  <div class="tagline">
-    <div class="surname">PAVLENKO</div>
-    <p>Oxford Physics & Philosophy '23. Ex-quant (commodities & crypto). 3x founder. Winner of 10+ international hackathons.</p>
-  </div>
-
-  <div class="creds">
-    <span class="cred">applied mech interp</span>
-    <span class="cred">A2A infra</span>
-    <span class="cred">web3//defi</span>
-    <span class="cred">fintech</span>
-    <span class="cred">quant trading</span>
-  </div>
-
-  <div class="explore">
-    <div class="explore-toggle">
-      <button class="explore-btn" id="btnProjects" type="button">Projects</button>
-      <button class="explore-btn" id="btnWriting" type="button">Writing</button>
-      <button class="explore-btn" id="btnContact" type="button">Contact</button>
+<div class="wrap">
+  <div class="reveal" id="r1">
+    <div class="name-row">
+      <figure class="portrait">
+        <img src="/img/work/mary-portrait.jpg" alt="Mary Pavlenko" width="1955" height="2000" />
+      </figure>
+      <h1>Mary&#10;Pavlenko</h1>
+      <!-- R3 reading note: hidden until hovered. Swap link/title/date weekly. -->
+      <a class="read-note" href="https://damianplayer.com/typesafe-ai-case-study" target="_blank" rel="noopener">
+        <span class="rn-k">recent read · 26 sep</span>
+        <span class="rn-t">TypeSafe AI: Launching Jev Out of Stealth ↗</span>
+      </a>
     </div>
-    <div class="projects-grid" id="projectsGrid"></div>
-    <div class="projects-grid" id="writingGrid"></div>
-    <div class="projects-grid" id="contactGrid"></div>
+    <p class="lead">Oxford Physics &amp; Philosophy '23. Ex-quant (commodities &amp; crypto). 3x founder. Winner of 10+ international hackathons.</p>
   </div>
+
+  <div class="photos" id="r3">
+    <figure>
+      <img src="/img/work/openai-hackerhouse.webp" width="1214" height="744" loading="lazy"
+        alt="At an OpenAI hacker house with Laura Modiano, Head of Founder Experience at OpenAI, and the cohort of builders" />
+      <figcaption>OpenAI hacker house - w/ Laura Modiano (Head of Founder Experience, OpenAI)</figcaption>
+    </figure>
+    <figure>
+      <img src="/img/work/ef-reid-hoffman.jpg" width="1080" height="813" loading="lazy"
+        alt="The Entrepreneur First founder cohort at a private lunch with Reid Hoffman" />
+      <figcaption>Entrepreneur First - lunch w/ Reid Hoffman</figcaption>
+    </figure>
+    <figure>
+      <img src="/img/work/a16z-podium.jpg" width="800" height="522" loading="lazy"
+        alt="Presenting ex2.1 as a finalist at the a16z AI Hack in London" />
+      <figcaption>a16z AI Hack - finalist, London</figcaption>
+    </figure>
+  </div>
+
+  <div class="reveal" id="r4">
+    <h2><span class="h2-label">Experience</span><span class="h2-count" id="countExperience"></span></h2>
+    <div id="experienceList"></div>
+
+    <h2><span class="h2-label">Projects</span><span class="h2-count" id="countProjects"></span></h2>
+    <div id="projectsList"></div>
+
+    <h2><span class="h2-label">Elsewhere</span><span class="h2-count" id="countContact"></span></h2>
+    <div class="contact" id="contactList"></div>
+  </div>
+
 </div>
 
 <script>
-import { PROJECTS, WRITING, CONTACT, ICONS } from '../lib/explore-data.ts';
+  import { EXPERIENCE, PROJECTS, CONTACT, type SectionItem } from '../lib/explore-data';
 
-(function () {
-  // Vertex + fragment shader ported from paper-design/liquid-logo (src/hero/canvas.tsx, src/app/hero/liquid-frag.ts)
-  const vertexShaderSource = `#version 300 es
-precision mediump float;
-in vec2 a_position;
-out vec2 vUv;
-void main() {
-  vUv = .5 * (a_position + 1.);
-  gl_Position = vec4(a_position, 0.0, 1.0);
-}`;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const fragmentShaderSource = `#version 300 es
-precision mediump float;
-in vec2 vUv;
-out vec4 fragColor;
-uniform sampler2D u_image_texture;
-uniform float u_time;
-uniform float u_ratio;
-uniform float u_img_ratio;
-uniform float u_patternScale;
-uniform float u_refraction;
-uniform float u_edge;
-uniform float u_patternBlur;
-uniform float u_liquid;
-#define TWO_PI 6.28318530718
-#define PI 3.14159265358979323846
-vec3 mod289(vec3 x) { return x - floor(x * (1. / 289.)) * 289.; }
-vec2 mod289(vec2 x) { return x - floor(x * (1. / 289.)) * 289.; }
-vec3 permute(vec3 x) { return mod289(((x*34.)+1.)*x); }
-float snoise(vec2 v) {
-    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-    vec2 i = floor(v + dot(v, C.yy));
-    vec2 x0 = v - i + dot(i, C.xx);
-    vec2 i1;
-    i1 = (x0.x > x0.y) ? vec2(1., 0.) : vec2(0., 1.);
-    vec4 x12 = x0.xyxy + C.xxzz;
-    x12.xy -= i1;
-    i = mod289(i);
-    vec3 p = permute(permute(i.y + vec3(0., i1.y, 1.)) + i.x + vec3(0., i1.x, 1.));
-    vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.);
-    m = m*m; m = m*m;
-    vec3 x = 2. * fract(p * C.www) - 1.;
-    vec3 h = abs(x) - 0.5;
-    vec3 ox = floor(x + 0.5);
-    vec3 a0 = x - ox;
-    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-    vec3 g;
-    g.x = a0.x * x0.x + h.x * x0.y;
-    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    return 130. * dot(m, g);
-}
-vec2 get_img_uv() {
-    vec2 img_uv = vUv;
-    img_uv -= .5;
-    if (u_ratio > u_img_ratio) { img_uv.x = img_uv.x * u_ratio / u_img_ratio; }
-    else { img_uv.y = img_uv.y * u_img_ratio / u_ratio; }
-    img_uv += .5;
-    img_uv.y = 1. - img_uv.y;
-    return img_uv;
-}
-vec2 rotate(vec2 uv, float th) { return mat2(cos(th), sin(th), -sin(th), cos(th)) * uv; }
-float get_color_channel(float c1, float c2, float stripe_p, vec3 w, float extra_blur, float b) {
-    float ch = c2;
-    float border = 0.;
-    float blur = u_patternBlur + extra_blur;
-    ch = mix(ch, c1, smoothstep(.0, blur, stripe_p));
-    border = w[0];
-    ch = mix(ch, c2, smoothstep(border - blur, border + blur, stripe_p));
-    b = smoothstep(.2, .8, b);
-    border = w[0] + .4 * (1. - b) * w[1];
-    ch = mix(ch, c1, smoothstep(border - blur, border + blur, stripe_p));
-    border = w[0] + .5 * (1. - b) * w[1];
-    ch = mix(ch, c2, smoothstep(border - blur, border + blur, stripe_p));
-    border = w[0] + w[1];
-    ch = mix(ch, c1, smoothstep(border - blur, border + blur, stripe_p));
-    float gradient_t = (stripe_p - w[0] - w[1]) / w[2];
-    float gradient = mix(c1, c2, smoothstep(0., 1., gradient_t));
-    ch = mix(ch, gradient, smoothstep(border - blur, border + blur, stripe_p));
-    return ch;
-}
-float get_img_frame_alpha(vec2 uv, float img_frame_width) {
-    float img_frame_alpha = smoothstep(0., img_frame_width, uv.x) * smoothstep(1., 1. - img_frame_width, uv.x);
-    img_frame_alpha *= smoothstep(0., img_frame_width, uv.y) * smoothstep(1., 1. - img_frame_width, uv.y);
-    return img_frame_alpha;
-}
-void main() {
-    vec2 uv = vUv;
-    uv.y = 1. - uv.y;
-    uv.x *= u_ratio;
-    float diagonal = uv.x - uv.y;
-    float t = .001 * u_time;
-    vec2 img_uv = get_img_uv();
-    vec4 img = texture(u_image_texture, img_uv);
-    vec3 color = vec3(0.);
-    float opacity = 1.;
-    vec3 color1 = vec3(.98, 0.98, 1.);
-    vec3 color2 = vec3(.1, .1, .1 + .1 * smoothstep(.7, 1.3, uv.x + uv.y));
-    float edge = img.r;
-    vec2 grad_uv = uv;
-    grad_uv -= .5;
-    float dist = length(grad_uv + vec2(0., .2 * diagonal));
-    grad_uv = rotate(grad_uv, (.25 - .2 * diagonal) * PI);
-    float bulge = pow(1.8 * dist, 1.2);
-    bulge = 1. - bulge;
-    bulge *= pow(uv.y, .3);
-    float cycle_width = u_patternScale;
-    float thin_strip_1_ratio = .12 / cycle_width * (1. - .4 * bulge);
-    float thin_strip_2_ratio = .07 / cycle_width * (1. + .4 * bulge);
-    float wide_strip_ratio = (1. - thin_strip_1_ratio - thin_strip_2_ratio);
-    float thin_strip_1_width = cycle_width * thin_strip_1_ratio;
-    float thin_strip_2_width = cycle_width * thin_strip_2_ratio;
-    opacity = 1. - smoothstep(.9 - .5 * u_edge, 1. - .5 * u_edge, edge);
-    opacity *= get_img_frame_alpha(img_uv, 0.01);
-    float noise = snoise(uv - t);
-    edge += (1. - edge) * u_liquid * noise;
-    float refr = 0.;
-    refr += (1. - bulge);
-    refr = clamp(refr, 0., 1.);
-    float dir = grad_uv.x;
-    dir += diagonal;
-    dir -= 2. * noise * diagonal * (smoothstep(0., 1., edge) * smoothstep(1., 0., edge));
-    bulge *= clamp(pow(uv.y, .1), .3, 1.);
-    dir *= (.1 + (1.1 - edge) * bulge);
-    dir *= smoothstep(1., .7, edge);
-    dir += .18 * (smoothstep(.1, .2, uv.y) * smoothstep(.4, .2, uv.y));
-    dir += .03 * (smoothstep(.1, .2, 1. - uv.y) * smoothstep(.4, .2, 1. - uv.y));
-    dir *= (.5 + .5 * pow(uv.y, 2.));
-    dir *= cycle_width;
-    dir -= t;
-    float refr_r = refr;
-    refr_r += .03 * bulge * noise;
-    float refr_b = 1.3 * refr;
-    refr_r += 5. * (smoothstep(-.1, .2, uv.y) * smoothstep(.5, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(1., .4, bulge));
-    refr_r -= diagonal;
-    refr_b += (smoothstep(0., .4, uv.y) * smoothstep(.8, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(.8, .4, bulge));
-    refr_b -= .2 * edge;
-    refr_r *= u_refraction;
-    refr_b *= u_refraction;
-    vec3 w = vec3(thin_strip_1_width, thin_strip_2_width, wide_strip_ratio);
-    w[1] -= .02 * smoothstep(.0, 1., edge + bulge);
-    float stripe_r = mod(dir + refr_r, 1.);
-    float r = get_color_channel(color1.r, color2.r, stripe_r, w, 0.02 + .03 * u_refraction * bulge, bulge);
-    float stripe_g = mod(dir, 1.);
-    float g = get_color_channel(color1.g, color2.g, stripe_g, w, 0.01 / (1. - diagonal), bulge);
-    float stripe_b = mod(dir - refr_b, 1.);
-    float b = get_color_channel(color1.b, color2.b, stripe_b, w, .01, bulge);
-    color = vec3(r, g, b);
-    color *= opacity;
-    fragColor = vec4(color, opacity);
-}`;
-
-  // Build a soft distance-style mask from the "MARY" wordmark, same idea as
-  // paper-design/liquid-logo's parseLogoImage(): white at the silhouette edge,
-  // dark toward the interior, solved with a small Poisson relaxation.
-  function buildMonogramMask(size) {
-    const shapeCanvas = document.createElement('canvas');
-    shapeCanvas.width = size; shapeCanvas.height = size;
-    const sctx = shapeCanvas.getContext('2d');
-    sctx.fillStyle = '#fff';
-    sctx.fillRect(0, 0, size, size);
-    sctx.fillStyle = '#000';
-    sctx.textAlign = 'center';
-    sctx.textBaseline = 'middle';
-    const WORDMARK = 'MARY';
-    const targetWidth = size * 0.84;
-    const probeSize = Math.round(size * 0.3);
-    sctx.font = `700 ${probeSize}px "Helvetica Neue", Arial, sans-serif`;
-    const measuredWidth = sctx.measureText(WORDMARK).width;
-    const fitSize = Math.round(probeSize * (targetWidth / measuredWidth));
-    sctx.font = `700 ${fitSize}px "Helvetica Neue", Arial, sans-serif`;
-    sctx.fillText(WORDMARK, size / 2, size / 2 + size * 0.02);
-
-    const { data } = sctx.getImageData(0, 0, size, size);
-    const shapeMask = new Uint8Array(size * size);
-    for (let p = 0; p < size * size; p++) {
-      const r = data[p * 4];
-      shapeMask[p] = r < 128 ? 1 : 0;
+  // Decode/scramble reveal: text resolves out of flickering glyphs, left→right.
+  // Operates on an element's own inner text (keeps an <a>'s href intact).
+  // No '-', '/' or '\\' in the pool: browsers may line-break after those, which
+  // would let a decoding paragraph wrap differently from its final text.
+  const GLYPHS = '!<>_[]{}=+*^?#@%&$01';
+  // `lockWidth` freezes the element's box for the duration of the decode, so a
+  // proportional-font element can flicker without nudging its neighbours.
+  // (Mono elements never need it: every glyph has the same advance width.)
+  function scramble(el: HTMLElement, delay = 0, lockWidth = false) {
+    const finalText = el.dataset.text ?? el.textContent ?? '';
+    el.dataset.text = finalText;
+    if (reduce) { el.textContent = finalText; return; }
+    let unlock: (() => void) | null = null;
+    if (lockWidth) {
+      const w = el.offsetWidth;
+      const prevStyle = el.getAttribute('style') ?? '';
+      el.style.display = 'inline-block';
+      el.style.width = w + 'px';
+      el.style.whiteSpace = 'nowrap';
+      unlock = () => { el.setAttribute('style', prevStyle); };
     }
-
-    function inside(x, y) {
-      if (x < 0 || x >= size || y < 0 || y >= size) return false;
-      return shapeMask[y * size + x] === 1;
-    }
-
-    const boundaryMask = new Uint8Array(size * size);
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const idx = y * size + x;
-        if (!shapeMask[idx]) continue;
-        let isBoundary = false;
-        for (let ny = y - 1; ny <= y + 1 && !isBoundary; ny++) {
-          for (let nx = x - 1; nx <= x + 1 && !isBoundary; nx++) {
-            if (!inside(nx, ny)) isBoundary = true;
-          }
-        }
-        if (isBoundary) boundaryMask[idx] = 1;
+    const queue = [...finalText].map((to) => {
+      // Whitespace resolves instantly: spaces stay breakpoints and newlines
+      // stay line breaks for the whole decode, so wrapping never changes.
+      if (to === ' ' || to === '\n') return { to, start: 0, end: 0, char: '' };
+      const start = delay + Math.floor(Math.random() * 22);
+      return { to, start, end: start + 10 + Math.floor(Math.random() * 22), char: '' };
+    });
+    let frame = 0;
+    const tick = () => {
+      let out = '';
+      let done = 0;
+      for (const q of queue) {
+        if (frame >= q.end) { done++; out += q.to; }
+        else if (frame >= q.start) {
+          if (!q.char || Math.random() < 0.3) q.char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          out += `<span class="dud">${q.char}</span>`;
+        } else { out += q.to === ' ' ? ' ' : ' '; } // hold the footprint: no reflow while decoding
       }
+      el.innerHTML = out;
+      if (done < queue.length) { frame++; requestAnimationFrame(tick); }
+      else { el.textContent = finalText; unlock?.(); }
+    };
+    tick();
+  }
+
+  // Normalise em/en dashes to plain hyphens in any displayed copy.
+  const dash = (s: string) => (s ?? '').replace(/[—–]/g, '-');
+
+  // Best link for an item's name: its own url, else the first detail link.
+  function primaryUrl(item: SectionItem): string | null {
+    if (item.url) return item.url;
+    return item.links?.[0]?.url ?? null;
+  }
+
+  function makeLink(href: string, text: string, cls?: string): HTMLElement {
+    if (!href || href === '#') {
+      const span = document.createElement('span');
+      span.textContent = text;
+      if (cls) span.className = cls;
+      return span;
     }
-
-    let u = new Float32Array(size * size);
-    let newU = new Float32Array(size * size);
-    const C = 0.01;
-    const ITERATIONS = 120;
-    function getU(x, y, arr) {
-      if (x < 0 || x >= size || y < 0 || y >= size) return 0;
-      if (!shapeMask[y * size + x]) return 0;
-      return arr[y * size + x];
-    }
-    for (let iter = 0; iter < ITERATIONS; iter++) {
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          const idx = y * size + x;
-          if (!shapeMask[idx] || boundaryMask[idx]) { newU[idx] = 0; continue; }
-          const sumN = getU(x + 1, y, u) + getU(x - 1, y, u) + getU(x, y + 1, u) + getU(x, y - 1, u);
-          newU[idx] = (C + sumN) / 4;
-        }
-      }
-      const tmp = u; u = newU; newU = tmp;
-    }
-
-    let maxVal = 0;
-    for (let i = 0; i < size * size; i++) if (u[i] > maxVal) maxVal = u[i];
-
-    const out = new ImageData(size, size);
-    const alpha = 2.0;
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const idx = y * size + x;
-        const px = idx * 4;
-        if (!shapeMask[idx]) {
-          out.data[px] = 255; out.data[px + 1] = 255; out.data[px + 2] = 255; out.data[px + 3] = 255;
-        } else {
-          const raw = maxVal > 0 ? u[idx] / maxVal : 0;
-          const remapped = Math.pow(raw, alpha);
-          const gray = 255 * (1 - remapped);
-          out.data[px] = gray; out.data[px + 1] = gray; out.data[px + 2] = gray; out.data[px + 3] = 255;
-        }
-      }
-    }
-    return out;
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = text;
+    if (cls) a.className = cls;
+    if (href.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; }
+    return a;
   }
 
-  const params = {
-    patternScale: 2,
-    refraction: 0.015,
-    edge: 0.4,
-    patternBlur: 0.005,
-    liquid: 0.07,
-    speed: 0.3,
-  };
+  function renderEntries(el: HTMLElement, items: SectionItem[]) {
+    let idx = 0;
+    for (const item of items) {
+      const entry = document.createElement('div');
+      entry.className = 'entry';
 
-  function setupLiquidShader() {
-  const canvas = document.getElementById('liquidCanvas');
-  const loadingLabel = document.getElementById('loadingLabel');
-  const gl = canvas.getContext('webgl2', { antialias: true, alpha: true });
-  if (!gl) { loadingLabel.textContent = 'WebGL2 unsupported in this browser'; return; }
+      const hasFold = !!(item.detail || item.links?.length);
+      const head = document.createElement('div');
+      head.className = 'entry-head' + (hasFold ? '' : ' static');
 
-  function createShader(source, type) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error(gl.getShaderInfoLog(shader));
-      return null;
-    }
-    return shader;
-  }
+      const num = document.createElement('span');
+      num.className = 'entry-num';
+      num.textContent = String(++idx).padStart(2, '0');
+      head.appendChild(num);
 
-  const vs = createShader(vertexShaderSource, gl.VERTEX_SHADER);
-  const fs = createShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
-  const program = gl.createProgram();
-  gl.attachShader(program, vs);
-  gl.attachShader(program, fs);
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    loadingLabel.textContent = 'shader link failed';
-    return;
-  }
-  gl.useProgram(program);
-
-  const uniforms = {};
-  const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-  for (let i = 0; i < uniformCount; i++) {
-    const name = gl.getActiveUniform(program, i).name;
-    uniforms[name] = gl.getUniformLocation(program, name);
-  }
-
-  const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
-  const vertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-  const positionLocation = gl.getAttribLocation(program, 'a_position');
-  gl.enableVertexAttribArray(positionLocation);
-  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-  gl.uniform1f(uniforms.u_edge, params.edge);
-  gl.uniform1f(uniforms.u_patternBlur, params.patternBlur);
-  gl.uniform1f(uniforms.u_patternScale, params.patternScale);
-  gl.uniform1f(uniforms.u_refraction, params.refraction);
-  gl.uniform1f(uniforms.u_liquid, params.liquid);
-  gl.uniform1f(uniforms.u_ratio, 1);
-  gl.uniform1f(uniforms.u_img_ratio, 1);
-
-  const maskSize = 300;
-  const maskData = buildMonogramMask(maskSize);
-  const texture = gl.createTexture();
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maskSize, maskSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, maskData.data);
-  gl.uniform1i(uniforms.u_image_texture, 0);
-
-  loadingLabel.style.display = 'none';
-
-  function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const side = canvas.clientWidth;
-    canvas.width = side * dpr;
-    canvas.height = side * dpr;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  let totalTime = 0, lastTime = performance.now();
-  let rafId = null;
-
-  function render(now) {
-    const dt = now - lastTime;
-    lastTime = now;
-    totalTime += dt * params.speed;
-    gl.uniform1f(uniforms.u_time, totalTime);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    rafId = requestAnimationFrame(render);
-  }
-
-  const obs = new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) { if (!rafId) { lastTime = performance.now(); rafId = requestAnimationFrame(render); } }
-    else if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-  });
-  obs.observe(canvas);
-
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    rafId = requestAnimationFrame(render);
-  }
-  }
-  setupLiquidShader();
-
-  // PROJECTS, WRITING, CONTACT, and ICONS now live in ../lib/explore-data.ts
-  // (imported above) so the data + icon set can be unit tested.
-
-  function drawProjectIcon(canvas, iconName) {
-    const dpr = window.devicePixelRatio || 1;
-    const size = 36;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    (ICONS[iconName] || ICONS.plus)(ctx);
-  }
-
-  function renderGrid(gridEl, items) {
-    items.forEach((item, i) => {
-      const el = document.createElement(item.placeholder ? 'div' : 'a');
-      el.className = 'proj-card' + (item.placeholder ? ' placeholder' : '');
-      el.style.transitionDelay = `${i * 55}ms`;
-      if (!item.placeholder) {
-        el.href = item.url;
-        if (item.url.startsWith('http')) { el.target = '_blank'; el.rel = 'noopener'; }
-        else if (item.url === '#') { el.addEventListener('click', (e) => e.preventDefault()); }
-      }
-      const icon = document.createElement('div');
-      icon.className = 'proj-icon';
-      const cnv = document.createElement('canvas');
-      icon.appendChild(cnv);
-      const name = document.createElement('div');
-      name.className = 'proj-name';
+      const name = document.createElement('span');
+      name.className = 'entry-name';
+      name.style.borderBottom = '1px solid rgba(201,196,224,0.28)';
       name.textContent = item.name;
-      const tag = document.createElement('div');
-      tag.className = 'proj-tag';
-      tag.textContent = item.tag;
-      el.append(icon, name, tag);
-      gridEl.appendChild(el);
-      drawProjectIcon(cnv, item.icon);
-    });
-  }
+      head.appendChild(name);
 
-  const SECTIONS = {
-    projects: { grid: document.getElementById('projectsGrid'), btn: document.getElementById('btnProjects'), items: PROJECTS },
-    writing: { grid: document.getElementById('writingGrid'), btn: document.getElementById('btnWriting'), items: WRITING },
-    contact: { grid: document.getElementById('contactGrid'), btn: document.getElementById('btnContact'), items: CONTACT },
-  };
+      const tag = document.createElement('span');
+      tag.className = 'entry-tag';
+      tag.textContent = dash(item.tag);
+      head.appendChild(tag);
+      entry.appendChild(head);
 
-  for (const key in SECTIONS) renderGrid(SECTIONS[key].grid, SECTIONS[key].items);
+      if (hasFold) {
+        const fold = document.createElement('div');
+        fold.className = 'entry-fold';
+        if (item.detail) {
+          const p = document.createElement('p');
+          p.className = 'entry-detail';
+          p.textContent = dash(item.detail);
+          fold.appendChild(p);
+        }
+        const row = document.createElement('div');
+        row.className = 'entry-links';
+        const primary = primaryUrl(item);
+        if (primary && !item.links?.some((l) => l.url === primary)) {
+          row.appendChild(makeLink(primary, 'open'));
+        }
+        for (const l of item.links ?? []) row.appendChild(makeLink(l.url, l.label));
+        if (row.childElementCount) fold.appendChild(row);
+        entry.appendChild(fold);
 
-  let activeKey = null;
+        head.setAttribute('role', 'button');
+        head.setAttribute('tabindex', '0');
+        head.setAttribute('aria-expanded', 'false');
+        const toggle = () => {
+          const open = fold.classList.toggle('open');
+          head.setAttribute('aria-expanded', String(open));
+        };
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      } else {
+        // No detail: make the name itself the link.
+        const url = primaryUrl(item);
+        if (url && url !== '#') {
+          const a = document.createElement('a');
+          a.href = url;
+          a.className = 'entry-name';
+          a.textContent = item.name;
+          if (url.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; }
+          head.replaceChild(a, name);
+        }
+      }
 
-  function showSection(which) {
-    if (which === activeKey) return;
-
-    if (activeKey) {
-      const prev = SECTIONS[activeKey];
-      prev.grid.querySelectorAll('.proj-card.in').forEach(c => c.classList.remove('in'));
-      const prevGrid = prev.grid;
-      setTimeout(() => { if (SECTIONS[activeKey]?.grid !== prevGrid) prevGrid.classList.remove('shown'); }, 350);
+      el.appendChild(entry);
     }
-
-    const target = SECTIONS[which];
-    target.grid.classList.add('shown');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        target.grid.querySelectorAll('.proj-card').forEach(c => c.classList.add('in'));
-      });
-    });
-
-    activeKey = which;
-    for (const key in SECTIONS) SECTIONS[key].btn.classList.toggle('active', key === which);
   }
 
-  for (const key in SECTIONS) SECTIONS[key].btn.addEventListener('click', () => showSection(key));
-})();
+  function renderContact(el: HTMLElement, items: SectionItem[]) {
+    for (const item of items) {
+      const a = makeLink(item.url ?? '', item.name);
+      const tag = document.createElement('span');
+      tag.className = 'c-tag';
+      tag.textContent = dash(item.tag);
+      a.appendChild(tag);
+      el.appendChild(a);
+    }
+  }
+
+  renderEntries(document.getElementById('experienceList')!, EXPERIENCE);
+  renderEntries(document.getElementById('projectsList')!, PROJECTS);
+  renderContact(document.getElementById('contactList')!, CONTACT);
+
+  // ---- Reveal choreography ----
+  // Section counts, straight from the data.
+  const counts: Array<[string, number]> = [
+    ['countExperience', EXPERIENCE.length],
+    ['countProjects', PROJECTS.length],
+    ['countContact', CONTACT.length],
+  ];
+  for (const [id, n] of counts) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = `[${String(n).padStart(2, '0')}]`;
+  }
+
+  // Reveal only once the web fonts are GENUINELY loaded — the @import lands
+  // late, so fonts.ready alone fires too early; poll fonts.check instead, and
+  // never wait more than 1.5s. Text reflows before anything is visible, so the
+  // photos can't get shoved mid-load. The decode runs only on the mono section
+  // labels, whose scramble now holds its footprint (no re-wrapping).
+  const blocks = ['r1', 'r3', 'r4']
+    .map((id) => document.getElementById(id))
+    .filter((b): b is HTMLElement => !!b);
+
+  function startReveal() {
+    blocks.forEach((b, i) => setTimeout(() => b.classList.add('in'), i * 120));
+    // The decode the page opens with: name (width is fixed by its block box, so
+    // only the letters flicker), then the mono tagline, then section labels.
+    const h1 = document.querySelector('h1') as HTMLElement | null;
+    const lead = document.querySelector('.lead') as HTMLElement | null;
+    if (h1) scramble(h1, 4);
+    if (lead) setTimeout(() => scramble(lead, 0), 220);
+    document.querySelectorAll('.h2-label').forEach((h, i) =>
+      setTimeout(() => scramble(h as HTMLElement, 0), 420 + i * 90));
+  }
+
+  const FACES = ['700 16px "Space Grotesk"', '500 15px "Space Grotesk"', '400 13px "IBM Plex Mono"'];
+  const t0 = performance.now();
+  (function waitForFonts() {
+    const fonts = (document as any).fonts;
+    let ready = true;
+    if (fonts) {
+      try {
+        FACES.forEach((f) => fonts.load(f));
+        ready = FACES.every((f) => fonts.check(f));
+      } catch { ready = true; }
+    }
+    if (ready || performance.now() - t0 > 1500) { requestAnimationFrame(startReveal); return; }
+    setTimeout(waitForFonts, 60);
+  })();
+
+  // Each list entry fades in and decodes its name the first time it enters the
+  // viewport. The name's box is width-locked during the decode, so the tag and
+  // the + never shift.
+  const io = new IntersectionObserver((rows, obs) => {
+    for (const r of rows) {
+      if (!r.isIntersecting) continue;
+      const entry = r.target as HTMLElement;
+      entry.classList.add('in');
+      const name = entry.querySelector('.entry-name') as HTMLElement | null;
+      if (name) scramble(name, Math.floor(Math.random() * 6), true);
+      obs.unobserve(entry);
+    }
+  }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.entry').forEach((e) => io.observe(e));
+
+  // ---- Cursor spotlight ----
+  // Text elements within R px of the pointer switch to a text-clipped radial
+  // gradient centred on the cursor: green up close, their own colour past the
+  // falloff. Gradient centres may sit outside an element's box, so the circle
+  // sweeps smoothly across lines and neighbouring elements.
+  const SPOT_SEL = [
+    'h1', '.lead', '.h2-label', '.h2-count', '.entry-num', '.entry-name',
+    '.entry-tag', '.entry-detail', '.entry-links a', '.contact a', '.c-tag',
+    '.photos figcaption', '.rn-k', '.rn-t',
+  ].join(', ');
+  const spotEls = Array.from(document.querySelectorAll<HTMLElement>(SPOT_SEL));
+  const R = 110;
+  let rects: DOMRect[] | null = null;
+  const dropRects = () => { rects = null; };
+  window.addEventListener('scroll', dropRects, { passive: true });
+  window.addEventListener('resize', dropRects);
+
+  // One light source model shared by the cursor and the comet.
+  function spotlightAt(x: number, y: number) {
+    if (!rects) rects = spotEls.map((el) => el.getBoundingClientRect());
+    for (let i = 0; i < spotEls.length; i++) {
+      const r = rects[i];
+      const el = spotEls[i];
+      const dx = Math.max(r.left - x, 0, x - r.right);
+      const dy = Math.max(r.top - y, 0, y - r.bottom);
+      if (dx * dx + dy * dy < R * R) {
+        if (!el.classList.contains('spotlit')) {
+          el.style.setProperty('--base', getComputedStyle(el).color);
+          el.classList.add('spotlit');
+        }
+        el.style.setProperty('--mx', `${x - r.left}px`);
+        el.style.setProperty('--my', `${y - r.top}px`);
+      } else if (el.classList.contains('spotlit')) {
+        el.classList.remove('spotlit');
+      }
+    }
+  }
+
+  let lastMouse: { x: number; y: number } | null = null;
+  let cometActive = false;
+  window.addEventListener('mousemove', (e) => {
+    lastMouse = { x: e.clientX, y: e.clientY };
+    if (!cometActive) spotlightAt(e.clientX, e.clientY);
+  }, { passive: true });
+
+  // ---- Shooting star ----
+  // Every so often a small green streak crosses from top-right to bottom-left
+  // on a line computed through the reading note, lighting it up as it passes.
+  const readNote = document.querySelector('.read-note') as HTMLElement | null;
+  if (!reduce && readNote) {
+    const scheduleStar = () => setTimeout(launchStar, 5000 + Math.random() * 7000);
+    function launchStar() {
+      scheduleStar();
+      if (document.hidden) return;
+      const nr = readNote!.getBoundingClientRect();
+      if (nr.bottom < 0 || nr.top > window.innerHeight) return; // note offscreen — skip this pass
+      const C = { x: nr.left + nr.width / 2, y: nr.top + nr.height / 2 };
+      // Direction of travel: leftwards and down, with a little randomness.
+      const d = { x: -1, y: 0.55 + Math.random() * 0.3 };
+      const len = Math.hypot(d.x, d.y);
+      d.x /= len; d.y /= len;
+      const L = Math.hypot(window.innerWidth, window.innerHeight) * 0.55;
+      const rot = (Math.atan2(d.y, d.x) * 180 / Math.PI).toFixed(1);
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      star.style.transformOrigin = 'center';
+      document.body.appendChild(star);
+      const dur = 1100;
+      const t0 = performance.now();
+      cometActive = true;
+      // Driven frame-by-frame so the bright head doubles as a moving cursor:
+      // it carries the same spherical spotlight across whatever text it passes.
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / dur);
+        const t = -L + 2 * L * p;
+        const cx = C.x + d.x * t;
+        const cy = C.y + d.y * t;
+        star.style.transform = `translate(${(cx - 48).toFixed(1)}px, ${(cy - 1).toFixed(1)}px) rotate(${rot}deg)`;
+        star.style.opacity = (p < 0.35 ? p / 0.35 : 1 - (p - 0.35) / 0.65).toFixed(2);
+        spotlightAt(cx + d.x * 48, cy + d.y * 48); // light from the head, not the tail
+        if (p < 1) { requestAnimationFrame(step); return; }
+        star.remove();
+        cometActive = false;
+        // Hand the light back to wherever the cursor actually is.
+        if (lastMouse) spotlightAt(lastMouse.x, lastMouse.y);
+        else spotlightAt(-9999, -9999);
+      };
+      requestAnimationFrame(step);
+    }
+    setTimeout(launchStar, 3800); // first pass shortly after load
+  }
 </script>
 </Layout>
